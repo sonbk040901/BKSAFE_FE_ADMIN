@@ -1,18 +1,44 @@
-import { Button, Card, Space, Statistic, Table, Tag, Tooltip } from "antd";
+import {
+  Button,
+  Card,
+  Dropdown,
+  Select,
+  Space,
+  Statistic,
+  Table,
+  Tag,
+  Tooltip,
+  message,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { Driver, Location, User } from "../types";
 import UserInfoModal from "../components/Request/UserInfoModal";
 import { useMemo, useState } from "react";
 import DriversInfoModal from "../components/Request/DriversInfoModal";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 const locationRender = (location: Location) => {
+  const {
+    address,
+    // latLng: { lat, lng },
+  } = location;
   const title = (
     <Space.Compact
       className="text-slate-950 border-2 border-red-950"
       direction="horizontal"
     >
-      {location.address}
+      {/* <Table
+        rowKey={(record) => record.address}
+        columns={[
+          { title: "Address", dataIndex: "address" },
+          { title: "Lat", dataIndex: "lat" },
+          { title: "Lng", dataIndex: "lng" },
+        ]}
+        dataSource={[{ address, lat, lng }]}
+        pagination={false}
+        scroll={{ x: 300 }}
+      /> */}
+      {address}
       {/* <Tooltip title="Lat">
         <Button
           type="dashed"
@@ -36,15 +62,16 @@ const locationRender = (location: Location) => {
       title={title}
       color="white"
     >
-      <p className="overflow-hidden whitespace-nowrap overflow-ellipsis">{location.address}</p>
+      <p className="overflow-hidden whitespace-nowrap overflow-ellipsis">
+        {location.address}
+      </p>
     </Tooltip>
   );
 };
-
 type Status = "pending" | "accepted" | "rejected" | "completed";
 
 interface DataType {
-  _id: React.Key;
+  _id: string;
   user: User;
   currentLocation: Location;
   startLocation: Location;
@@ -53,9 +80,17 @@ interface DataType {
   driver?: Driver;
   status: Status;
   createdAt: string | Date;
+  locations: LocationV[];
 }
-
+type LocationV = {
+  address: string;
+  longitude: number;
+  latitude: number;
+  type: "stop" | "dropoff" | "pickup";
+  _id: string;
+};
 const RequestList = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [user, setUser] = useState<User>();
   const [drivers, setDrivers] = useState<Driver[]>();
   const { data, refetch, isFetching } = useQuery(
@@ -67,13 +102,33 @@ const RequestList = () => {
       }),
     { initialData: [] },
   );
+  const { mutate: acceptRequest } = useMutation({
+    mutationFn: (data: { reqId: string; driverId: string }) =>
+      axios
+        .post("http://localhost:3000/api/request/accept", data)
+        .then(() => refetch())
+        .then(() => messageApi.success("Accept request successfully!")),
+  });
+  const { mutate: changeStatus } = useMutation({
+    mutationFn: (data: { reqId: string; status: Status }) =>
+      axios
+        .patch("http://localhost:3000/api/request/status", data)
+        .then(() => refetch())
+        .then(() => messageApi.success("Change status successfully!")),
+  });
   const acceptRequests = useMemo(() => {
     return data.filter((request) => request.status === "accepted");
   }, [data]);
+  const handleChange = (rid: string, did: string) => {
+    acceptRequest({ reqId: rid, driverId: did });
+  };
+  const handleChangeStatus = (rid: string, status: Status) => {
+    changeStatus({ reqId: rid, status });
+  };
   const columns: ColumnsType<DataType> = useMemo(
     () => [
       {
-        title: "Id",
+        title: "",
         key: "_id",
         dataIndex: "_id",
         width: 50,
@@ -108,12 +163,12 @@ const RequestList = () => {
           </Tooltip>
         ),
       },
-      {
-        title: "Current location",
-        key: "currentLocation",
-        dataIndex: "currentLocation",
-        render: locationRender,
-      },
+      // {
+      //   title: "Current location",
+      //   key: "currentLocation",
+      //   dataIndex: "currentLocation",
+      //   // render: locationRender,
+      // },
       {
         title: "Start location",
         key: "startLocation",
@@ -125,6 +180,25 @@ const RequestList = () => {
         key: "endLocation",
         dataIndex: "endLocation",
         render: locationRender,
+      },
+      {
+        title: "Stop locations",
+        key: "locations",
+        dataIndex: "locations",
+        render: (locations: LocationV[]) => {
+          return (
+            <Dropdown
+              placement="bottomRight"
+              menu={{
+                items: locations
+                  .filter((l) => l.type === "stop")
+                  .map((l) => ({ key: l._id, label: l.address })),
+              }}
+            >
+              <Button type="link">{locations.length - 2}</Button>
+            </Dropdown>
+          );
+        },
       },
       {
         title: "Suggested drivers",
@@ -150,17 +224,19 @@ const RequestList = () => {
         title: "Driver",
         key: "driver",
         dataIndex: "driver",
-        render: (driver?: Driver) => {
-          if (!driver) return null;
+        render: (driver: Driver, record: DataType) => {
           return (
-            <Tooltip
-              title={
-                <p className="text-zinc-950">{`View ${driver.fullname}'s info`}</p>
-              }
-              color="white"
-            >
-              <Button type="link">{driver.fullname}</Button>
-            </Tooltip>
+            <Select
+              defaultValue={driver ? driver.fullname : null}
+              style={{ width: "100%" }}
+              onChange={(value) => {
+                handleChange(record._id, value);
+              }}
+              options={record.suggestedDriver.map((driver) => ({
+                label: driver.fullname,
+                value: driver._id,
+              }))}
+            />
           );
         },
       },
@@ -168,20 +244,31 @@ const RequestList = () => {
         title: "Status",
         key: "status",
         dataIndex: "status",
-        render: (status: Status) => {
-          let color = "geekblue";
-          if (status === "rejected") {
-            color = "volcano";
-          } else if (status === "completed") {
-            color = "green";
-          }
+        render: (status: Status, record: DataType) => {
           return (
-            <Tag
-              color={color}
-              key={status}
+            <Select
+              value={status}
+              style={{ width: "100%" }}
+              onChange={(value) => {
+                handleChangeStatus(record._id, value);
+              }}
             >
-              {status.toUpperCase()}
-            </Tag>
+              <Select.Option value="pending">
+                <Tag color="geekblue">PENDING</Tag>
+              </Select.Option>
+              <Select.Option value="accepted">
+                <Tag color="blue">ACCEPTED</Tag>
+              </Select.Option>
+              <Select.Option value="driving">
+                <Tag color="orange">DRIVING</Tag>
+              </Select.Option>
+              <Select.Option value="rejected">
+                <Tag color="volcano">REJECTED</Tag>
+              </Select.Option>
+              <Select.Option value="completed">
+                <Tag color="green">COMPLETED</Tag>
+              </Select.Option>
+            </Select>
           );
         },
         filters: [
@@ -262,6 +349,7 @@ const RequestList = () => {
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   return (
@@ -269,6 +357,7 @@ const RequestList = () => {
       className="w-full h-full"
       direction="vertical"
     >
+      {contextHolder}
       <Space className="h-32">
         <Card>
           <Statistic
@@ -298,7 +387,7 @@ const RequestList = () => {
         columns={columns}
         dataSource={data}
         loading={isFetching}
-        scroll={{ x: 1200, scrollToFirstRowOnChange: true, y: 400 }}
+        scroll={{ x: 1300, scrollToFirstRowOnChange: true, y: 350 }}
         pagination={{ pageSize: 5, responsive: false }}
       />
       <UserInfoModal

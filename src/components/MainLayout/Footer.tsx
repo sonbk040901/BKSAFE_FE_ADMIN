@@ -4,8 +4,10 @@ const { Footer: AntdFooter } = Layout;
 
 const Footer: FC = () => {
   return (
-    <AntdFooter className="rounded-md bg-white shadow-md">
-      Copyright ©7/2023 Created by LeDucSon
+    <AntdFooter
+      className="rounded-md bg-white shadow-md"
+    >
+      Copyright &copy; 7/2023 Created by LeDucSon
     </AntdFooter>
   );
 };

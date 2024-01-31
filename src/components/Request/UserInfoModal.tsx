@@ -27,8 +27,9 @@ const UserInfoModal: FC<UserInfoModalProps> = ({ user, ...props }) => {
             icon={<UserOutlined />}
             src={
               avatar ||
-              "https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg"
+              "https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png"
             }
+            className="border-2 border-red-950"
             size={150}
             alt="avatar"
           />
