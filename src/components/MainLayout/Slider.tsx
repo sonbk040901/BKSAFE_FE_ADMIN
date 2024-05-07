@@ -1,12 +1,15 @@
-import { Layout, Button, Menu, MenuProps } from "antd";
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  HomeOutlined,
   CarOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
+import { Button, Layout, Menu, MenuProps } from "antd";
 import { FC, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../states";
+import { removeAccount } from "../../states/slices/account";
 const { Sider } = Layout;
 const items: MenuProps["items"] = [
   { type: "divider" },
@@ -19,6 +22,7 @@ const items: MenuProps["items"] = [
 ];
 const Slider: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   return (
@@ -27,23 +31,42 @@ const Slider: FC = () => {
       collapsed={collapsed}
       className="rounded-md shadow-md"
     >
-      <div className=" rounded-md p-2 grid place-items-center">
-        <Button
-          block
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
-        />
+      <div className="flex flex-col h-full">
+        <div className="rounded-md p-2 grid place-items-center">
+          <Button
+            block
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+          />
+        </div>
+        <div className="flex-1">
+          <Menu
+            defaultSelectedKeys={[pathname]}
+            theme="light"
+            mode="inline"
+            items={items}
+            onSelect={(item) => {
+              navigate(item.key);
+            }}
+          />
+        </div>
+        <Menu
+          selectable={false}
+          items={[
+            { type: "divider" },
+            {
+              key: "/logout",
+              icon: <LogoutOutlined />,
+              label: "Logout",
+              onClick: () => {
+                dispatch(removeAccount());
+                navigate("/login");
+              },
+            },
+          ]}
+        ></Menu>
       </div>
-      <Menu
-        defaultSelectedKeys={[pathname]}
-        theme="light"
-        mode="inline"
-        items={items}
-        onSelect={(item) => {
-          navigate(item.key);
-        }}
-      />
     </Sider>
   );
 };
