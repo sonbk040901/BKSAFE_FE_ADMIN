@@ -1,20 +1,11 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "..";
 import { authApi } from "../../api";
 import { Account } from "../../api/types";
 
 interface AuthState {
-  // status: "loading" | "success" | "error";
-  // updateStatus: "idle" | "loading" | "success" | "error";
-  info?: Account; // for user object
-  // error: null | object;
+  info?: Account;
 }
-// const initialState: AuthState = {
-//   status: "loading",
-//   updateStatus: "idle",
-//   info: null, // for user object
-//   error: null,
-// };
 const initialState: AuthState = {};
 export const accountSlice = createSlice({
   name: "account",
@@ -31,5 +22,9 @@ export const accountSlice = createSlice({
   },
 });
 export const selectAccount = (state: RootState) => state.account;
+export const selectAccountInfo = createSelector(
+  selectAccount,
+  (account) => account.info,
+);
 export const { patchAccount, removeAccount } = accountSlice.actions;
 export default accountSlice.reducer;

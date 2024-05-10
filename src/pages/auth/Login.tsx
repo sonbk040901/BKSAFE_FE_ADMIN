@@ -2,11 +2,11 @@ import { Button, Checkbox, Form } from "antd";
 import FormTitle from "../../components/auth/FormTitle";
 import Input from "../../components/auth/Input";
 import { useState } from "react";
-import Link from "antd/es/typography/Link";
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "../../api";
 import { useAppDispatch } from "../../states";
 import { patchAccount } from "../../states/slices/account";
+import { Link } from "react-router-dom";
 type LoginValues = {
   email: string;
   password: string;
@@ -81,7 +81,7 @@ const Login = () => {
           </Button>
         </Form.Item>
         <div className="text-center">
-          Chưa có tài khoản? <Link>Đăng ký ngay</Link>
+          Bạn chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
         </div>
       </div>
     </Form>

@@ -2,9 +2,9 @@ import { Button, Checkbox, Form } from "antd";
 import FormTitle from "../../components/auth/FormTitle";
 import Input from "../../components/auth/Input";
 import { useState } from "react";
-import Link from "antd/es/typography/Link";
+import { Link } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   const [rememberMe, setRememberMe] = useState(false);
   return (
     <Form className="p-3">
@@ -18,14 +18,8 @@ const Login = () => {
         }
       />
       <div className="flex flex-col gap-5 pb-10">
-        <Input
-          label="Email"
-          type="email"
-        />
-        <Input
-          label="Password"
-          type="password"
-        />
+        <Input type="email" />
+        <Input type="password" />
         <Checkbox
           checked={rememberMe}
           onChange={(e) => setRememberMe(e.target.checked)}
@@ -33,10 +27,12 @@ const Login = () => {
           Nhớ tài khoản
         </Checkbox>
         <Button type="primary">Đăng nhập</Button>
-        <div className="text-center">Chưa có tài khoản? <Link>Đăng ký ngay</Link></div>
+        <div className="text-center">
+          Bạn đã có tài khoản? <Link to='/login'>Đăng nhập ngay</Link>
+        </div>
       </div>
     </Form>
   );
 };
 
-export default Login;
+export default Register;

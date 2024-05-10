@@ -13,11 +13,11 @@ import { removeAccount } from "../../states/slices/account";
 const { Sider } = Layout;
 const items: MenuProps["items"] = [
   { type: "divider" },
-  { key: "/", icon: <HomeOutlined />, label: "Home" },
+  { key: "/", icon: <HomeOutlined />, label: "Trang chủ" },
   {
-    key: "/request",
+    key: "/bookings",
     icon: <CarOutlined />,
-    label: "Request list",
+    label: "Yêu cầu",
   },
 ];
 const Slider: FC = () => {
@@ -58,10 +58,9 @@ const Slider: FC = () => {
             {
               key: "/logout",
               icon: <LogoutOutlined />,
-              label: "Logout",
+              label: "Đăng xuất",
               onClick: () => {
                 dispatch(removeAccount());
-                navigate("/login");
               },
             },
           ]}
