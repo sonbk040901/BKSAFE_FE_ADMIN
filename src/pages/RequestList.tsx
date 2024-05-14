@@ -14,16 +14,18 @@ import {
   Table,
   Tag,
   Tooltip,
-  message
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
 import { useMemo, useState } from "react";
 import { bookingApi } from "../api";
 import { GetAllPagingAndSortDto } from "../api/booking";
-import { Booking, PagingAndSortResponse } from "../api/types";
+import { Booking, PagingAndSortResponse, User } from "../api/types";
 import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
 import StatisticBar from "../components/booking/StatisticBar";
+import UserInfoModal from "../components/Request/UserInfoModal";
+import BookingDetailModal from "../components/booking/BookingDetailModal";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
   skip: 0,
@@ -61,9 +63,11 @@ const getTagStatus = (status: Booking["status"]) => {
   }
 };
 const RequestList = () => {
-  const [bookingId, setBookingId] = useState<number>();
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
+  const [bookingId, setBookingId] = useState<number>();
+  const [booking, setBooking] = useState<Booking>();
+  const [user, setUser] = useState<User>();
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
   const { data, refetch, isFetching } = useQuery({
     queryFn: () => bookingApi.getAll(query),
@@ -123,6 +127,7 @@ const RequestList = () => {
         title: "Giá",
         key: "price",
         dataIndex: "price",
+        width: 110,
         render: (price: number) => (
           <span>
             {price.toLocaleString("vi-VN", {
@@ -136,6 +141,7 @@ const RequestList = () => {
         title: "Trạng thái",
         key: "status",
         dataIndex: "status",
+        width: 130,
         render: getTagStatus,
         filters: [
           { text: "Đang chờ", value: "PENDING" },
@@ -152,7 +158,7 @@ const RequestList = () => {
         title: "Người đặt",
         key: "account",
         dataIndex: ["user", "email"],
-        render: (email: string) => (
+        render: (email: string, record) => (
           <Tooltip
             color="white"
             title={
@@ -161,7 +167,9 @@ const RequestList = () => {
               </span>
             }
           >
-            <Link>{email}</Link>
+            <Link onClick={() => setUser(record.user ?? undefined)}>
+              {email}
+            </Link>
           </Tooltip>
         ),
       },
@@ -209,11 +217,17 @@ const RequestList = () => {
         width: 100,
         render: (_, record) => (
           <Space>
-            <Button
-              size="small"
-              icon={<EyeOutlined />}
-              type="text"
-            />
+            <Tooltip
+              color="white"
+              title={<p className="text-slate-950">Xem chi tiết</p>}
+            >
+              <Button
+                size="small"
+                icon={<EyeOutlined />}
+                type="text"
+                onClick={() => setBooking(record)}
+              />
+            </Tooltip>
             {record.status === "PENDING" && (
               <Dropdown
                 menu={{
@@ -304,7 +318,7 @@ const RequestList = () => {
         columns={columns}
         dataSource={data.data}
         loading={isFetching}
-        scroll={{ scrollToFirstRowOnChange: false, y: 450}}
+        scroll={{ scrollToFirstRowOnChange: false, y: 450, x: 1000 }}
         onChange={(pagination, filters) => {
           setQuery({
             ...query,
@@ -326,6 +340,14 @@ const RequestList = () => {
       />
       {contextHolder}
       {modalContext}
+      <UserInfoModal
+        user={user}
+        onCancel={() => setUser(undefined)}
+      />
+      <BookingDetailModal
+        booking={booking}
+        onCancel={() => setBooking(undefined)}
+      />
     </Space>
   );
 };

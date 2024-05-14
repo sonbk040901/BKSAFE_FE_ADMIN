@@ -35,8 +35,4 @@ const Router = createBrowserRouter([
     ],
   },
 ]);
-export const breadCrumb = [
-  { path: "/", breadcrumbName: "Home", title: "Trang chủ" },
-  { path: "/bookings", breadcrumbName: "Requests", title: "Yêu cầu" },
-];
 export default Router;

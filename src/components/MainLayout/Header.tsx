@@ -1,9 +1,7 @@
 import { Breadcrumb, Layout } from "antd";
 import { FC } from "react";
 import { useLocation } from "react-router-dom";
-import { breadCrumb } from "../../router";
 const { Header: AntdHeader } = Layout;
-
 const Header: FC = () => {
   const { pathname } = useLocation();
   console.log(pathname);
@@ -15,9 +13,7 @@ const Header: FC = () => {
       // itemRender={({ title, path }) => {
       //   return pathname === path ? <>{title}</> : null;
       // }}
-      >
-        
-      </Breadcrumb>
+      ></Breadcrumb>
     </AntdHeader>
   );
 };

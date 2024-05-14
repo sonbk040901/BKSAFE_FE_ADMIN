@@ -1,10 +1,6 @@
-export const PendingUser = ({
-  size = 32,
-  color = "black",
-}: {
-  size?: number;
-  color?: string;
-}) => (
+import { IconProps } from "./types";
+
+export const PendingUser = ({ size = 32, color = "black" }: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
@@ -34,3 +30,4 @@ export const PendingUser = ({
     </g>
   </svg>
 );
+export default PendingUser;

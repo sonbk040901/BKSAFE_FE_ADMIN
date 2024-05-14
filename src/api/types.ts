@@ -43,6 +43,7 @@ export interface Account {
   gender: Gender;
   driver: Driver | null;
 }
+export interface User extends Account {}
 export interface Driver extends Account {
   name: string;
   phone: string;
@@ -75,6 +76,7 @@ export interface Booking {
   notes: Note[];
   price: number;
   userId: number;
+  user: User | null;
   note: string;
   rating: number | null;
   startTime: string | null;
