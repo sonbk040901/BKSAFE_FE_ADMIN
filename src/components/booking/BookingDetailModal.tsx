@@ -10,10 +10,27 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
   booking,
   ...props
 }) => {
-  const {} = booking || {};
+  const {
+    id,
+    locations,
+    startTime,
+    endTime,
+    user,
+    status,
+    rating,
+    nextLocationId,
+    notes,
+    note,
+    price,
+    driver,
+    updatedAt,
+    createdAt,
+  } = booking || {};
   return (
     <Modal
       {...props}
+      title={`Thông tin chi tiết yêu cầu đặt xe #${id || ""}`}
+      footer={null}
       open={!!booking}
     ></Modal>
   );

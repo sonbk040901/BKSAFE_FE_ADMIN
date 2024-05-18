@@ -1,7 +1,7 @@
 import {
   CloseCircleOutlined,
   EyeOutlined,
-  MoreOutlined,
+  SettingFilled,
   SearchOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -22,10 +22,11 @@ import { useMemo, useState } from "react";
 import { bookingApi } from "../api";
 import { GetAllPagingAndSortDto } from "../api/booking";
 import { Booking, PagingAndSortResponse, User } from "../api/types";
-import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
-import StatisticBar from "../components/booking/StatisticBar";
 import UserInfoModal from "../components/Request/UserInfoModal";
 import BookingDetailModal from "../components/booking/BookingDetailModal";
+import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
+import StatisticBar from "../components/booking/StatisticBar";
+import SwitchMode from "../components/booking/SwitchMode";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
   skip: 0,
@@ -229,72 +230,83 @@ const RequestList = () => {
               />
             </Tooltip>
             {record.status === "PENDING" && (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: "list-driver",
-                      icon: <SearchOutlined />,
-                      label: "Tài xế phù hợp",
-                      onClick: () => handleViewSuggestDrivers(record.id),
-                    },
-                    {
-                      key: "reject",
-                      icon: <CloseCircleOutlined />,
-                      label: "Từ chối",
-                      onClick: () => {
-                        modal.confirm({
-                          title: "Từ chối yêu cầu",
-                          icon: null,
-                          content: (
-                            <p>
-                              Bạn có chắc chắn muốn từ chối yêu cầu này không?
-                            </p>
-                          ),
-                          okText: "Từ chối",
-                          cancelText: "Hủy",
-                          onOk() {
-                            const key = "reject-booking";
-                            void messageApi.open({
-                              key,
-                              type: "loading",
-                              content: "Đang xử lý...",
-                            });
-                            bookingApi
-                              .rejectBooking(record.id)
-                              .then(() => {
-                                void refetch();
-                                void messageApi.success({
-                                  key,
-                                  content: "Từ chối thành công",
-                                });
-                              })
-                              .catch(() => {
-                                void messageApi.error({
-                                  key,
-                                  content: "Từ chối thất bại",
-                                });
-                              });
-                          },
-                        });
-                      },
-                    },
-                  ],
-                }}
-                trigger={["click"]}
+              // <Dropdown
+              //   menu={{
+              //     items: [
+              //       {
+              //         key: "list-driver",
+              //         icon: <SearchOutlined />,
+              //         label: "Tài xế phù hợp",
+              //         onClick: () => handleViewSuggestDrivers(record.id),
+              //       },
+              //       {
+              //         key: "reject",
+              //         icon: <CloseCircleOutlined />,
+              //         label: "Từ chối",
+              //         onClick: () => {
+              //           modal.confirm({
+              //             title: "Từ chối yêu cầu",
+              //             icon: null,
+              //             content: (
+              //               <p>
+              //                 Bạn có chắc chắn muốn từ chối yêu cầu này không?
+              //               </p>
+              //             ),
+              //             okText: "Từ chối",
+              //             cancelText: "Hủy",
+              //             onOk() {
+              //               const key = "reject-booking";
+              //               void messageApi.open({
+              //                 key,
+              //                 type: "loading",
+              //                 content: "Đang xử lý...",
+              //               });
+              //               bookingApi
+              //                 .rejectBooking(record.id)
+              //                 .then(() => {
+              //                   void refetch();
+              //                   void messageApi.success({
+              //                     key,
+              //                     content: "Từ chối thành công",
+              //                   });
+              //                 })
+              //                 .catch(() => {
+              //                   void messageApi.error({
+              //                     key,
+              //                     content: "Từ chối thất bại",
+              //                   });
+              //                 });
+              //             },
+              //           });
+              //         },
+              //       },
+              //     ],
+              //   }}
+              //   trigger={["click"]}
+              // >
+              //   <Button
+              //     size="small"
+              //     icon={<SettingFilled />}
+              //     type="text"
+              //   />
+              // </Dropdown>
+              <Tooltip
+                color="white"
+                title={<p className="text-slate-950">Xử lý</p>}
               >
                 <Button
                   size="small"
-                  icon={<MoreOutlined />}
+                  icon={<SettingFilled />}
                   type="text"
+                  onClick={() => handleViewSuggestDrivers(record.id)}
                 />
-              </Dropdown>
+              </Tooltip>
             )}
           </Space>
         ),
       },
     ],
-    [messageApi, modal, query.status, refetch],
+    [query.status],
   );
   const handleViewSuggestDrivers = (bookingId: number) => {
     setBookingId(bookingId);
@@ -311,7 +323,18 @@ const RequestList = () => {
         onClose={handleCloseDrawer}
         bookingId={bookingId}
       />
-      <StatisticBar />
+      <div className="flex gap-2">
+        <StatisticBar
+          onSelect={(status) => {
+            setQuery((prv) => ({
+              ...prv,
+              skip: 0,
+              status: status ? [status] : [],
+            }));
+          }}
+        />
+        <SwitchMode />
+      </div>
       <Table
         className="flex-1"
         rowKey={(record) => record.id}

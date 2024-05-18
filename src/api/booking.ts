@@ -1,13 +1,19 @@
-import { BookingStatus, Driver, SuggestDriver } from "./types";
 import buildUrl from "../utils/searchParam";
 import instance from "./axios";
-import { Booking, PagingAndSortDto, PagingAndSortResponse } from "./types";
+import {
+  Booking,
+  BookingStatus,
+  PagingAndSortDto,
+  PagingAndSortResponse,
+  SuggestDriver,
+} from "./types";
 export interface GetAllPagingAndSortDto extends PagingAndSortDto {
   status?: string[];
 }
 export type BookingStatistic = {
-  [key in BookingStatus]: number;
-}
+  [key in BookingStatus]?: number;
+};
+
 export const getAll = async (dto: Type<GetAllPagingAndSortDto> = {}) => {
   const path = `admin/bookings`;
   const url = buildUrl(path, dto);
@@ -28,9 +34,21 @@ export const suggestDriver = async (bookingId: number, driverId: number) => {
   const path = `admin/bookings/${bookingId}/suggest/${driverId}`;
   const res = await instance.post<void>(path);
   return res.data;
-}
+};
 export const getStatistic = async () => {
   const path = `admin/bookings/statistic`;
   const res = await instance.get<BookingStatistic>(path);
   return res.data;
-}
+};
+
+export const getFindDriverMode = async () => {
+  const path = "admin/bookings/mode";
+  const res = await instance.get<boolean>(path);
+  return res.data;
+};
+
+export const changeFindDriverMode = async (auto?: boolean) => {
+  const path = "admin/bookings/mode";
+  const res = await instance.patch<boolean>(path, { auto });
+  return res.data;
+};

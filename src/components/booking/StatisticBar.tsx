@@ -1,11 +1,13 @@
-import { CarOutlined } from "@ant-design/icons";
+import { CarOutlined, RedoOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Space, Tag, notification } from "antd";
-import { useEffect, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { bookingApi } from "../../api";
 import { BookingStatus } from "../../api/types";
 import { bookingSocket } from "../../socket";
-import { isFluxStandardAction } from "@reduxjs/toolkit";
+import { useAppSelector } from "../../states";
+import { selectSocketStatus } from "../../states/slices/socket";
+import cn from "classnames";
 const getTagStatus = (status: BookingStatus) => {
   switch (status) {
     case "PENDING":
@@ -35,54 +37,64 @@ const getTagStatus = (status: BookingStatus) => {
   }
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface StatisticBarProps {}
+interface StatisticBarProps {
+  onSelect?: (status?: BookingStatus) => void;
+}
 
-const StatisticBar: FC<StatisticBarProps> = () => {
+const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   const [notiApi, contextHolder] = notification.useNotification();
-  const { data: statistic, refetch: refetchStatistic } = useQuery({
+  const socketStatus = useAppSelector(selectSocketStatus);
+  const {
+    data: statistic,
+    refetch: refetchStatistic,
+    isFetching,
+  } = useQuery({
     queryFn: bookingApi.getStatistic,
     refetchOnWindowFocus: false,
-    initialData: {
-      PENDING: 0,
-      ACCEPTED: 0,
-      RECEIVED: 0,
-      REJECTED: 0,
-      CANCELLED: 0,
-      DRIVING: 0,
-      COMPLETED: 0,
-    },
+    initialData: {},
     queryKey: ["bookingStatistic"],
   });
+  const [hasNoti, setHasNoti] = useState(false);
   const total = Object.values(statistic).reduce((acc, value) => acc + value, 0);
-  isFluxStandardAction;
   useEffect(() => {
-    // TODO: 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    globalThis["test"] = () => {
-      notiApi.open({
-        type: "warning",
-        message: "Có yêu cầu mới",
-        description: "Có yêu cầu mới, vui lòng kiểm tra",
-        duration: 3,
-      });
-    };
-    return bookingSocket.listenNewPendingBooking(() => {
+    if (socketStatus !== "connected") return;
+    const cb = () => {
+      setHasNoti(true);
       void refetchStatistic();
       notiApi.open({
         message: "Có yêu cầu mới",
         description: "Có yêu cầu mới, vui lòng kiểm tra",
-        duration: 0,
+        duration: 10,
+        type: "warning",
       });
-    });
-  }, [notiApi, refetchStatistic]);
+    };
+    const unsubcribe1 = bookingSocket.listenNewPendingBooking(cb);
+    const unsubcribe2 = bookingSocket.listenNewAcceptedBooking(cb);
+    return () => {
+      unsubcribe1?.();
+      unsubcribe2?.();
+    };
+  }, [notiApi, refetchStatistic, socketStatus]);
+  const handleClickStatus = (status?: BookingStatus) => {
+    setHasNoti(false);
+    onSelect?.(status);
+  };
   return (
-    <div className="w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
+    <div className="relative w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
       {contextHolder}
+      <span className="absolute bottom-1 right-1 cursor-pointer">
+        <RedoOutlined
+          spin={isFetching}
+          onClick={() => void refetchStatistic()}
+        />
+      </span>
       <Space key={"total"}>
         <div className="flex flex-col gap-2">
           <span>Tổng</span>
-          <div className="space-x-1">
+          <div
+            className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110"
+            onClick={() => handleClickStatus()}
+          >
             <CarOutlined />
             <span className="font-semibold text-base">{total}</span>
           </div>
@@ -92,8 +104,15 @@ const StatisticBar: FC<StatisticBarProps> = () => {
         <Space key={key}>
           <div className="flex flex-col gap-2">
             <span>{getTagStatus(key as BookingStatus)}</span>
-            <div className="space-x-1">
-              <CarOutlined />
+            <div
+              className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110"
+              onClick={() => handleClickStatus(key as BookingStatus)}
+            >
+              <CarOutlined
+                className={cn({
+                  "text-red-500 animate-bounce": key === "PENDING" && hasNoti,
+                })}
+              />
               <span className="font-semibold text-base">{value}</span>
             </div>
           </div>

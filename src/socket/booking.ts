@@ -19,3 +19,10 @@ export const listenNewPendingBooking = (cb: (bookingId: number) => void) => {
     socket.off("new-pending", cb);
   };
 };
+export const listenNewAcceptedBooking = (cb: (bookingId: number) => void) => {
+  if (!socket) return;
+  socket.on("new-accepted", cb);
+  return () => {
+    socket.off("new-accepted", cb);
+  };
+};
