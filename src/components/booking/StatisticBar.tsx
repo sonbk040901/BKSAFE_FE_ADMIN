@@ -1,13 +1,13 @@
 import { CarOutlined, RedoOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Space, Tag, notification } from "antd";
+import cn from "classnames";
 import { useEffect, useState, type FC } from "react";
 import { bookingApi } from "../../api";
 import { BookingStatus } from "../../api/types";
-import { bookingSocket } from "../../socket";
+import { subcribe } from "../../socket";
 import { useAppSelector } from "../../states";
 import { selectSocketStatus } from "../../states/slices/socket";
-import cn from "classnames";
 const getTagStatus = (status: BookingStatus) => {
   switch (status) {
     case "PENDING":
@@ -68,11 +68,11 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
         type: "warning",
       });
     };
-    const unsubcribe1 = bookingSocket.listenNewPendingBooking(cb);
-    const unsubcribe2 = bookingSocket.listenNewAcceptedBooking(cb);
+    const unsubcribe1 = subcribe("booking/new-accepted", cb);
+    const unsubcribe2 = subcribe("booking/new-pending", cb);
     return () => {
-      unsubcribe1?.();
-      unsubcribe2?.();
+      unsubcribe1();
+      unsubcribe2();
     };
   }, [notiApi, refetchStatistic, socketStatus]);
   const handleClickStatus = (status?: BookingStatus) => {

@@ -1,7 +1,6 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { bookingSocket } from "../../socket";
-
+import * as socket from "../../socket";
 interface SocketState {
   status: "loading" | "connected" | "disconnected" | "failed";
 }
@@ -13,11 +12,11 @@ export const socketSlice = createSlice({
   initialState,
   reducers: {
     connect: (state) => {
-      bookingSocket.connect();
+      socket.createConnect();
       state.status = "connected";
     },
     disconnect: (state) => {
-      bookingSocket.disconnect();
+      socket.disconnect();
       state.status = "disconnected";
     },
   },

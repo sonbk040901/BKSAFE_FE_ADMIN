@@ -23,6 +23,7 @@ import Link from "antd/es/typography/Link";
 import { type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
 import { PagingAndSortResponse, SuggestDriver } from "../../api/types";
+import SuggestDriverItem from "./SuggestDriver";
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
     yield arr.slice(i, i + n);
@@ -40,11 +41,11 @@ const initialData: PagingAndSortResponse<SuggestDriver> = {
 interface SelectDriverDrawerProps extends ComponentProps<typeof Drawer> {
   bookingId?: number;
   onClose?: () => void;
-  onReject?: () => void;
+  onChange?: () => void;
 }
 
 const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
-  const { bookingId, onClose, onReject } = props;
+  const { bookingId, onClose, onChange } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
   const { data: dto, refetch } = useQuery({
@@ -106,74 +107,15 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
         >
           {[...chunks(data, 5)].map((data, i) => (
             <div
-              key={i}
+              key={null}
               className="space-y-3 pr-3"
             >
               {data.map((driver) => (
-                <Badge.Ribbon
+                <SuggestDriverItem
                   key={driver.id}
-                  color={
-                    driver.priority > 0.9
-                      ? "green"
-                      : driver.priority > 0.7
-                      ? "blue"
-                      : driver.priority > 0.5
-                      ? "orange"
-                      : "red"
-                  }
-                  text={`${(
-                    (driver.priority > 1 ? 1 : driver.priority) * 100
-                  ).toFixed(1)}%`}
-                >
-                  <Card
-                    size="small"
-                    className="shadow-sm"
-                  >
-                    <div className="flex gap-2 items-center">
-                      <Avatar
-                        size={46}
-                        // src={driver.avatar ?? "https://i.pravatar.cc/300"}
-                        src={"https://i.pravatar.cc/300"}
-                      />
-                      <Space
-                        direction="vertical"
-                        className="flex-1"
-                      >
-                        <div className="flex gap-2">
-                          <Typography className="font-semibold">
-                            {driver.username}
-                          </Typography>
-                          <span className="text-yellow-500">
-                            {driver.rating} <StarFilled />
-                          </span>
-                        </div>
-                        <Link>{driver.fullName}</Link>
-                      </Space>
-                      <p className="self-end flex gap-1">
-                        <AimOutlined className="text-pink-400" />
-                        <span>{(driver.distance / 1000).toFixed(2)} km</span>
-                      </p>
-                    </div>
-                    <Divider className="m-2" />
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        type="primary"
-                        onClick={() => handleSelect(driver.id)}
-                      >
-                        Chọn
-                      </Button>
-                      <Button
-                        type="dashed"
-                        icon={<PhoneOutlined />}
-                        onClick={() => {
-                          window.open(`tel:${driver.phone}`);
-                        }}
-                      >
-                        Gọi
-                      </Button>
-                    </div>
-                  </Card>
-                </Badge.Ribbon>
+                  driver={driver}
+                  onSelect={handleSelect}
+                />
               ))}
             </div>
           ))}
@@ -214,6 +156,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
                         key,
                         content: "Từ chối thành công",
                       });
+                      onChange?.();
                     })
                     .catch(() => {
                       void messageApi.error({

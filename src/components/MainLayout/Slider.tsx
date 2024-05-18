@@ -5,11 +5,13 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
+import Icon from "@ant-design/icons";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { FC, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../states";
 import { removeAccount } from "../../states/slices/account";
+import { DriverIcon } from "../../icons";
 const { Sider } = Layout;
 const items: MenuProps["items"] = [
   { type: "divider" },
@@ -18,6 +20,11 @@ const items: MenuProps["items"] = [
     key: "/bookings",
     icon: <CarOutlined />,
     label: "Yêu cầu",
+  },
+  {
+    key: "/drivers",
+    icon: <Icon component={() => <DriverIcon size={14} />} />,
+    label: "Tài xế",
   },
 ];
 const Slider: FC = () => {

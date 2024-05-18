@@ -322,6 +322,7 @@ const RequestList = () => {
       <SelectDriverDrawer
         onClose={handleCloseDrawer}
         bookingId={bookingId}
+        onChange={void refetch}
       />
       <div className="flex gap-2">
         <StatisticBar

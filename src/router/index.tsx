@@ -2,12 +2,9 @@ import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Loader from "../components/Loader";
 import AuthLayout from "../layouts/AuthLayout";
+import DriverList from "../pages/DriverList";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import {
-  BreadcrumbItemType,
-  BreadcrumbSeparatorType,
-} from "antd/es/breadcrumb/Breadcrumb";
 const MainLayout = Loader(
   lazy(async () => import("../layouts/MainLayout")),
   "App",
@@ -24,6 +21,10 @@ const Router = createBrowserRouter([
         path: "bookings",
         element: <RequestList />,
       },
+      {
+        path: "drivers",
+        element: <DriverList />,
+      }
     ],
   },
   {
