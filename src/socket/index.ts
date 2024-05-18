@@ -27,6 +27,7 @@ export const disconnect = () => {
   booking.disconnect();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const subcribe = (event: SocketEvent, cb: (...data: any[]) => void) => {
   if (!booking) return () => 0;
   const [namespace, eventName] = event.split("/") as [
@@ -36,9 +37,7 @@ export const subcribe = (event: SocketEvent, cb: (...data: any[]) => void) => {
   switch (namespace) {
     case "booking":
       booking.on(eventName, cb);
-      return () => {
-        booking?.off(eventName, cb);
-      };
+      return () => booking?.off(eventName, cb);
     default:
       return () => 0;
   }

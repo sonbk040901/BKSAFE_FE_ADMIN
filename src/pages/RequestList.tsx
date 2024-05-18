@@ -1,14 +1,8 @@
-import {
-  CloseCircleOutlined,
-  EyeOutlined,
-  SettingFilled,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { EyeOutlined, SettingFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Badge,
   Button,
-  Dropdown,
   Modal,
   Space,
   Table,
@@ -27,6 +21,7 @@ import BookingDetailModal from "../components/booking/BookingDetailModal";
 import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
 import StatisticBar from "../components/booking/StatisticBar";
 import SwitchMode from "../components/booking/SwitchMode";
+import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
   skip: 0,
@@ -48,14 +43,7 @@ const getTagStatus = (status: Booking["status"]) => {
     case "CANCELLED":
       return <Tag color="red">Đã hủy</Tag>;
     case "DRIVING":
-      return (
-        <Badge
-          status="success"
-          text="Success"
-        >
-          <Tag color="purple">Đang thực hiện</Tag>
-        </Badge>
-      );
+      return <Tag color="purple">Đang thực hiện</Tag>;
     case "COMPLETED":
       return <Tag color="green">Kết thúc</Tag>;
 
@@ -179,35 +167,13 @@ const RequestList = () => {
         key: "createdAt",
         dataIndex: "createdAt",
         render: (createdAt: string | Date) => {
-          const date = new Date(createdAt);
-          const dateFormated = date.toLocaleString("vi", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          });
-          const now = new Date();
-          const diff = now.getTime() - date.getTime();
-          let html: JSX.Element;
-          if (diff < 1000 * 60) {
-            html = <span>Vừa xong</span>;
-          } else if (diff < 1000 * 60 * 60) {
-            html = <span>{Math.floor(diff / (1000 * 60))} phút trước</span>;
-          } else if (diff < 1000 * 60 * 60 * 24) {
-            html = <span>{Math.floor(diff / (1000 * 60 * 60))} giờ trước</span>;
-          } else if (diff < 1000 * 60 * 60 * 24 * 7) {
-            html = (
-              <span>{Math.floor(diff / (1000 * 60 * 60 * 24))} ngày trước</span>
-            );
-          } else html = <span>{dateFormated}</span>;
+          const [diff, formated] = timeDiff(createdAt);
           return (
             <Tooltip
               color="white"
-              title={<p className="text-slate-950">{dateFormated}</p>}
+              title={<p className="text-slate-950">{formated}</p>}
             >
-              {html}
+              {diff}
             </Tooltip>
           );
         },
@@ -337,7 +303,6 @@ const RequestList = () => {
         <SwitchMode />
       </div>
       <Table
-        className="flex-1"
         rowKey={(record) => record.id}
         columns={columns}
         dataSource={data.data}
@@ -358,8 +323,11 @@ const RequestList = () => {
           total: data.total,
           current: data.skip / data.take + 1,
           responsive: false,
-          showTotal: (total, [from, to]) =>
-            `${from}-${to} trên tổng ${total}  yêu cầu`,
+          showTotal: (total, [from, to]) => (
+            <>
+              {from}-{to} trên tổng <b>{total}</b> yêu cầu
+            </>
+          ),
         }}
       />
       {contextHolder}

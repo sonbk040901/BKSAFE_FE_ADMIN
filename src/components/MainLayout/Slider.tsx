@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../states";
 import { removeAccount } from "../../states/slices/account";
 import { DriverIcon } from "../../icons";
+import useLocalStorage from "../../hooks/useLocalStorage";
 const { Sider } = Layout;
 const items: MenuProps["items"] = [
   { type: "divider" },
@@ -31,7 +32,7 @@ const Slider: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { pathname } = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useLocalStorage("collapsed", false);
   return (
     <Sider
       theme="light"
@@ -44,7 +45,9 @@ const Slider: FC = () => {
             block
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              setCollapsed(!collapsed);
+            }}
           />
         </div>
         <div className="flex-1">

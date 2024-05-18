@@ -30,6 +30,7 @@ export interface Note {
   title: string;
   description: string;
 }
+
 type Gender = "OTHER" | "MALE" | "FEMALE";
 export interface Account {
   id: number;
@@ -44,6 +45,22 @@ export interface Account {
   driver: Driver | null;
 }
 export interface User extends Account {}
+export interface License {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  frontImage: string;
+  backImage: string;
+  number: string;
+  fullName: string;
+  address: string;
+  birthday: string;
+  issueDate: string;
+  expireDate: string;
+  classType: string;
+}
+export type DriverStatus = "AVAILABLE" | "BUSY" | "OFFLINE";
+export type ActivateStatus = "DEACTIVATED" | "ACTIVATED" | "REJECTED";
 export interface Driver extends Account {
   name: string;
   phone: string;
@@ -53,6 +70,9 @@ export interface Driver extends Account {
   birthday: string;
   address: string;
   location: Location;
+  license: License;
+  activateStatus: ActivateStatus;
+  status: DriverStatus;
 }
 export interface SuggestDriver extends Driver {
   priority: number;

@@ -92,7 +92,7 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
         <div className="flex flex-col gap-2">
           <span>Tổng</span>
           <div
-            className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110"
+            className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
             onClick={() => handleClickStatus()}
           >
             <CarOutlined />
@@ -105,7 +105,7 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
           <div className="flex flex-col gap-2">
             <span>{getTagStatus(key as BookingStatus)}</span>
             <div
-              className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110"
+              className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
               onClick={() => handleClickStatus(key as BookingStatus)}
             >
               <CarOutlined
