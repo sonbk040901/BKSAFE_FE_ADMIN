@@ -1,18 +1,17 @@
-import {
+import Icon, {
   CarOutlined,
   HomeOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
-import Icon from "@ant-design/icons";
 import { Button, Layout, Menu, MenuProps } from "antd";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import { DriverIcon } from "../../icons";
 import { useAppDispatch } from "../../states";
 import { removeAccount } from "../../states/slices/account";
-import { DriverIcon } from "../../icons";
-import useLocalStorage from "../../hooks/useLocalStorage";
 const { Sider } = Layout;
 const items: MenuProps["items"] = [
   { type: "divider" },

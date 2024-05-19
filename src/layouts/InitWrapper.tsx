@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { FC, PropsWithChildren } from "react";
+import { useEffect, useState, type FC, type PropsWithChildren } from "react";
 import { authApi } from "../api";
 import Loading from "../components/common/Loading";
 import { useAppDispatch } from "../states";
 import { patchAccount } from "../states/slices/account";
+import * as socket from "../socket";
 
 const InitWrapper: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useAppDispatch();
@@ -13,7 +14,17 @@ const InitWrapper: FC<PropsWithChildren> = ({ children }) => {
     refetchOnWindowFocus: false,
     retry: false,
   });
-  if (status === "loading") return <Loading />;
+  const [socketConnecting, setSocketConnecting] = useState(true);
+  useEffect(() => {
+    if (status === "loading") return;
+    socket.createConnect();
+    setSocketConnecting(false);
+    return () => {
+      socket.disconnect();
+      setSocketConnecting(true);
+    };
+  }, [status]);
+  if (socketConnecting) return <Loading />;
   dispatch(patchAccount(data));
   return children;
 };

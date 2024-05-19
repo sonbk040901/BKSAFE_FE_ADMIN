@@ -13,11 +13,9 @@ const useLocalStorage = <T = unknown>(key: string, defaultValue: T) => {
       // localStorage and then return it
       if (value) {
         return JSON.parse(value) as T;
-      } else {
-        localStorage.setItem(key, JSON.stringify(defaultValue));
-        return defaultValue;
       }
-    } catch (error) {
+      throw new Error("No value in localStorage");
+    } catch (_) {
       localStorage.setItem(key, JSON.stringify(defaultValue));
       return defaultValue;
     }
@@ -29,7 +27,6 @@ const useLocalStorage = <T = unknown>(key: string, defaultValue: T) => {
   ) => {
     let newValue: T;
     if (typeof valueOrFn === "function") {
-			
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

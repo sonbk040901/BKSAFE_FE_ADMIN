@@ -12,6 +12,7 @@ import {
   PagingAndSortResponse,
 } from "../api/types";
 import timeDiff from "../utils/timeDiff";
+import StatisticBar from "../components/driver/StatisticBar";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
   skip: 0,
@@ -178,7 +179,18 @@ const DriverList = () => {
       className="w-full h-full"
       direction="vertical"
     >
-      <h1>Danh sách tài xế</h1>
+      <div className="flex gap-2">
+        <StatisticBar
+          onSelect={(status) => {
+            setQuery((prv) => ({
+              ...prv,
+              skip: 0,
+              // status: status ? [status] : [],
+            }));
+          }}
+        />
+      </div>
+
       <Table
         rowKey={(record) => record.id}
         columns={columns}

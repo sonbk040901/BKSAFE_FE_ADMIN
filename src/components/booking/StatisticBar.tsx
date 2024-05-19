@@ -6,8 +6,6 @@ import { useEffect, useState, type FC } from "react";
 import { bookingApi } from "../../api";
 import { BookingStatus } from "../../api/types";
 import { subcribe } from "../../socket";
-import { useAppSelector } from "../../states";
-import { selectSocketStatus } from "../../states/slices/socket";
 const getTagStatus = (status: BookingStatus) => {
   switch (status) {
     case "PENDING":
@@ -43,7 +41,6 @@ interface StatisticBarProps {
 
 const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   const [notiApi, contextHolder] = notification.useNotification();
-  const socketStatus = useAppSelector(selectSocketStatus);
   const {
     data: statistic,
     refetch: refetchStatistic,
@@ -57,7 +54,6 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   const [hasNoti, setHasNoti] = useState(false);
   const total = Object.values(statistic).reduce((acc, value) => acc + value, 0);
   useEffect(() => {
-    if (socketStatus !== "connected") return;
     const cb = () => {
       setHasNoti(true);
       void refetchStatistic();
@@ -74,7 +70,7 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
       unsubcribe1();
       unsubcribe2();
     };
-  }, [notiApi, refetchStatistic, socketStatus]);
+  }, [notiApi, refetchStatistic]);
   const handleClickStatus = (status?: BookingStatus) => {
     setHasNoti(false);
     onSelect?.(status);

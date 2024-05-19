@@ -196,66 +196,6 @@ const RequestList = () => {
               />
             </Tooltip>
             {record.status === "PENDING" && (
-              // <Dropdown
-              //   menu={{
-              //     items: [
-              //       {
-              //         key: "list-driver",
-              //         icon: <SearchOutlined />,
-              //         label: "Tài xế phù hợp",
-              //         onClick: () => handleViewSuggestDrivers(record.id),
-              //       },
-              //       {
-              //         key: "reject",
-              //         icon: <CloseCircleOutlined />,
-              //         label: "Từ chối",
-              //         onClick: () => {
-              //           modal.confirm({
-              //             title: "Từ chối yêu cầu",
-              //             icon: null,
-              //             content: (
-              //               <p>
-              //                 Bạn có chắc chắn muốn từ chối yêu cầu này không?
-              //               </p>
-              //             ),
-              //             okText: "Từ chối",
-              //             cancelText: "Hủy",
-              //             onOk() {
-              //               const key = "reject-booking";
-              //               void messageApi.open({
-              //                 key,
-              //                 type: "loading",
-              //                 content: "Đang xử lý...",
-              //               });
-              //               bookingApi
-              //                 .rejectBooking(record.id)
-              //                 .then(() => {
-              //                   void refetch();
-              //                   void messageApi.success({
-              //                     key,
-              //                     content: "Từ chối thành công",
-              //                   });
-              //                 })
-              //                 .catch(() => {
-              //                   void messageApi.error({
-              //                     key,
-              //                     content: "Từ chối thất bại",
-              //                   });
-              //                 });
-              //             },
-              //           });
-              //         },
-              //       },
-              //     ],
-              //   }}
-              //   trigger={["click"]}
-              // >
-              //   <Button
-              //     size="small"
-              //     icon={<SettingFilled />}
-              //     type="text"
-              //   />
-              // </Dropdown>
               <Tooltip
                 color="white"
                 title={<p className="text-slate-950">Xử lý</p>}

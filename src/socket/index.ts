@@ -34,11 +34,27 @@ export const subcribe = (event: SocketEvent, cb: (...data: any[]) => void) => {
     SocketNameSpace,
     BookingEvent,
   ];
+  console.log(
+    "%cSubcribe: ",
+    "font-weight: 500; font-size: 11px;color: red; text-shadow: 1px 1px 0 rgb(255, 219, 151) , 1.1px 1.1px 0 rgb(255, 94, 0) , 1.2px 1.2px 0 rgb(245,221,8) , 1.3px 1.3px 0 rgb(5,148,68) , 1.4px 1.4px 0 rgb(2,135,206) , 1.5px 1.5px 0 rgb(4,77,145) , 1.6px 1.6px 0 rgb(42,21,113)",
+    event
+  );
+  let unsubcribe: () => void;
   switch (namespace) {
     case "booking":
       booking.on(eventName, cb);
-      return () => booking?.off(eventName, cb);
+      unsubcribe = () => booking?.off(eventName, cb);
+      break;
     default:
-      return () => 0;
+      unsubcribe = () => 0;
+      break;
   }
+  return () => {
+    unsubcribe();
+    console.log(
+      "%cUnsubcribe: ",
+      "font-weight: 500; font-size: 11px;color: red; text-shadow: 1px 1px 0 rgb(255, 219, 151) , 1.1px 1.1px 0 rgb(255, 211, 186) , 1.2px 1.2px 0 rgb(245,221,8) , 1.3px 1.3px 0 rgb(5,148,68) , 1.4px 1.4px 0 rgb(2,135,206) , 1.5px 1.5px 0 rgb(4,77,145) , 1.6px 1.6px 0 rgb(42,21,113)",
+      event
+    );
+  };
 };
