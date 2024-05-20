@@ -58,10 +58,10 @@ const RequestList = () => {
   const [booking, setBooking] = useState<Booking>();
   const [user, setUser] = useState<User>();
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
-  const { data, refetch, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryFn: () => bookingApi.getAll(query),
     initialData,
-    queryKey: [query],
+    queryKey: [{ ...query }],
     refetchOnWindowFocus: false,
   });
   const columns: ColumnsType<Booking> = useMemo(
@@ -220,6 +220,9 @@ const RequestList = () => {
   const handleCloseDrawer = () => {
     setBookingId(undefined);
   };
+  const handleRefresh = () => {
+    setQuery((prv) => ({ ...prv, status: [] }));
+  };
   return (
     <Space
       className="w-full h-full"
@@ -228,7 +231,7 @@ const RequestList = () => {
       <SelectDriverDrawer
         onClose={handleCloseDrawer}
         bookingId={bookingId}
-        onChange={void refetch}
+        onReject={handleRefresh}
       />
       <div className="flex gap-2">
         <StatisticBar

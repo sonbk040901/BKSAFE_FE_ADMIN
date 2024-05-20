@@ -2,7 +2,7 @@ import { CarOutlined, RedoOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Space, Tag, notification } from "antd";
 import cn from "classnames";
-import { useEffect, useState, type FC } from "react";
+import { useDeferredValue, useEffect, useState, type FC } from "react";
 import { bookingApi } from "../../api";
 import { BookingStatus } from "../../api/types";
 import { subcribe } from "../../socket";
@@ -40,6 +40,7 @@ interface StatisticBarProps {
 }
 
 const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
+  useDeferredValue(onSelect);
   const [notiApi, contextHolder] = notification.useNotification();
   const {
     data: statistic,

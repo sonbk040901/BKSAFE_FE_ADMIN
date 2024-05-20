@@ -1,25 +1,15 @@
 import {
-  AimOutlined,
-  PhoneOutlined,
-  ReloadOutlined,
-  StarFilled,
   CloseCircleOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  Avatar,
-  Badge,
   Button,
-  Card,
   Carousel,
-  Divider,
   Drawer,
   Modal,
-  Space,
-  Typography,
-  message,
+  message
 } from "antd";
-import Link from "antd/es/typography/Link";
 import { type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
 import { PagingAndSortResponse, SuggestDriver } from "../../api/types";
@@ -42,10 +32,11 @@ interface SelectDriverDrawerProps extends ComponentProps<typeof Drawer> {
   bookingId?: number;
   onClose?: () => void;
   onChange?: () => void;
+  onReject?: () => void;
 }
 
 const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
-  const { bookingId, onClose, onChange } = props;
+  const { bookingId, onClose, onChange, onReject } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
   const { data: dto, refetch } = useQuery({
@@ -151,12 +142,11 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
                   bookingApi
                     .rejectBooking(bookingId)
                     .then(() => {
-                      void refetch();
                       void messageApi.success({
                         key,
                         content: "Từ chối thành công",
                       });
-                      onChange?.();
+                      onReject?.();
                     })
                     .catch(() => {
                       void messageApi.error({
