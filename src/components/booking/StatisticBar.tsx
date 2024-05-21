@@ -34,7 +34,6 @@ const getTagStatus = (status: BookingStatus) => {
       break;
   }
 };
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface StatisticBarProps {
   onSelect?: (status?: BookingStatus) => void;
 }
@@ -61,7 +60,7 @@ const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
       0,
     );
     useImperativeHandle(ref, () => ({
-      refetch: () => void refetchStatistic(), 
+      refetch: () => void refetchStatistic(),
     }));
     useEffect(() => {
       const cb = () => {

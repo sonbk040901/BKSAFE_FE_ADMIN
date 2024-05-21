@@ -1,15 +1,6 @@
-import {
-  CloseCircleOutlined,
-  ReloadOutlined
-} from "@ant-design/icons";
+import { CloseCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  Button,
-  Carousel,
-  Drawer,
-  Modal,
-  message
-} from "antd";
+import { Button, Carousel, Drawer, Modal, message } from "antd";
 import { type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
 import { PagingAndSortResponse, SuggestDriver } from "../../api/types";
@@ -36,7 +27,7 @@ interface SelectDriverDrawerProps extends ComponentProps<typeof Drawer> {
 }
 
 const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
-  const { bookingId, onClose, onChange, onReject } = props;
+  const { bookingId, onClose, onReject } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
   const { data: dto, refetch } = useQuery({
@@ -96,7 +87,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
           draggable
           className="cursor-grab"
         >
-          {[...chunks(data, 5)].map((data, i) => (
+          {[...chunks(data, 5)].map((data) => (
             <div
               key={null}
               className="space-y-3 pr-3"

@@ -12,19 +12,19 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
 }) => {
   const {
     id,
-    locations,
-    startTime,
-    endTime,
-    user,
-    status,
-    rating,
-    nextLocationId,
-    notes,
-    note,
-    price,
-    driver,
-    updatedAt,
-    createdAt,
+    // locations,
+    // startTime,
+    // endTime,
+    // user,
+    // status,
+    // rating,
+    // nextLocationId,
+    // notes,
+    // note,
+    // price,
+    // driver,
+    // updatedAt,
+    // createdAt,
   } = booking || {};
   return (
     <Modal

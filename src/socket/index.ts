@@ -1,6 +1,5 @@
 import { Socket, io } from "socket.io-client";
 import { getData } from "../utils/storage";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { VITE_BACKEND_URL, VITE_BACKEND_PORT } = import.meta.env;
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 export const ENDPOINT = `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}`;

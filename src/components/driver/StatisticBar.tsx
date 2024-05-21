@@ -1,10 +1,10 @@
-import Icon, { CarOutlined, RedoOutlined } from "@ant-design/icons";
+import Icon, { RedoOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Space, Tag, notification } from "antd";
+import { Badge, Space, Tag } from "antd";
+import classNames from "classnames";
 import { useState, type FC } from "react";
 import { driverApi } from "../../api";
 import type { ActivateStatus, DriverStatus } from "../../api/types";
-import classNames from "classnames";
 import { DriverIcon } from "../../icons";
 
 interface StatisticBarProps {
@@ -15,7 +15,6 @@ interface StatisticBarProps {
 }
 
 const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
-  const [notiApi, contextHolder] = notification.useNotification();
   const [hasNoti, setHasNoti] = useState(false);
   const {
     data: { activateStatus, status, total },
@@ -40,7 +39,6 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   };
   return (
     <div className="relative w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
-      {contextHolder}
       <span className="absolute bottom-1 right-1 cursor-pointer">
         <RedoOutlined
           spin={isFetching}

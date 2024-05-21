@@ -1,12 +1,12 @@
 import {
-  UserOutlined,
-  LockOutlined,
-  InfoCircleOutlined,
-  EyeOutlined,
   EyeInvisibleOutlined,
+  EyeOutlined,
+  InfoCircleOutlined,
+  LockOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Input as BaseInput, Typography } from "antd";
-import { ComponentProps, useId, useState, type FC } from "react";
+import { Input as BaseInput } from "antd";
+import { ComponentProps, useState, type FC } from "react";
 const getIcon = (type: InputType) => {
   const icons = {
     email: <UserOutlined />,

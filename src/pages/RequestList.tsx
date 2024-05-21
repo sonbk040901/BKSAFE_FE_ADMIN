@@ -1,15 +1,6 @@
 import { EyeOutlined, SettingFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Badge,
-  Button,
-  Modal,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-  message,
-} from "antd";
+import { Button, Space, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
 import { useMemo, useRef, useState } from "react";
@@ -54,8 +45,6 @@ const getTagStatus = (status: Booking["status"]) => {
   }
 };
 const RequestList = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-  const [modal, modalContext] = Modal.useModal();
   const [bookingId, setBookingId] = useState<number>();
   const [booking, setBooking] = useState<Booking>();
   const [user, setUser] = useState<User>();
@@ -278,8 +267,6 @@ const RequestList = () => {
           ),
         }}
       />
-      {contextHolder}
-      {modalContext}
       <UserInfoModal
         user={user}
         onCancel={() => setUser(undefined)}

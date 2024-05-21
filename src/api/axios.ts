@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getData } from "../utils/storage";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { VITE_BACKEND_URL, VITE_BACKEND_PORT } = import.meta.env;
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 export const BASE_URL = `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}/`;

@@ -7,7 +7,10 @@ import {
   PagingAndSortDto,
   PagingAndSortResponse,
 } from "./types";
-export interface GetDriversPagingAndSortDto extends PagingAndSortDto {}
+export interface GetDriversPagingAndSortDto extends PagingAndSortDto {
+  status?: DriverStatus | DriverStatus[];
+  activateStatus?: ActivateStatus;
+}
 export type DriverStatusStatistic = {
   [key in DriverStatus]?: number;
 };

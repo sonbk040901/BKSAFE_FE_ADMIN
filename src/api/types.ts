@@ -44,6 +44,7 @@ export interface Account {
   gender: Gender;
   driver: Driver | null;
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface User extends Account {}
 export interface License {
   id: number;

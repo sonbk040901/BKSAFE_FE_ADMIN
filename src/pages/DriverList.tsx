@@ -23,9 +23,9 @@ const initialData: PagingAndSortResponse<Driver> = {
 };
 
 const DriverList = () => {
-  const [driver, setDriver] = useState<Driver>();
+  const [, setDriver] = useState<Driver>();
   const [query, setQuery] = useState<GetDriversPagingAndSortDto>(initialData);
-  const { data, refetch, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryFn: () => driverApi.getAll(query),
     initialData,
     queryKey: ["get-drivers", query.order, query.sort, query.skip, query.take],
@@ -185,7 +185,7 @@ const DriverList = () => {
             setQuery((prv) => ({
               ...prv,
               skip: 0,
-              // status: status ? [status] : [],
+              status: status ? [status] : [],
             }));
           }}
         />
