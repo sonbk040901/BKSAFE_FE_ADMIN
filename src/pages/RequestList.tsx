@@ -12,14 +12,16 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { bookingApi } from "../api";
 import { GetAllPagingAndSortDto } from "../api/booking";
 import { Booking, PagingAndSortResponse, User } from "../api/types";
 import UserInfoModal from "../components/Request/UserInfoModal";
 import BookingDetailModal from "../components/booking/BookingDetailModal";
 import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
-import StatisticBar from "../components/booking/StatisticBar";
+import StatisticBar, {
+  StatisticBarRef,
+} from "../components/booking/StatisticBar";
 import SwitchMode from "../components/booking/SwitchMode";
 import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Booking> = {
@@ -58,6 +60,7 @@ const RequestList = () => {
   const [booking, setBooking] = useState<Booking>();
   const [user, setUser] = useState<User>();
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
+  const statisticBarRef = useRef<StatisticBarRef>(null);
   const { data, isFetching } = useQuery({
     queryFn: () => bookingApi.getAll(query),
     initialData,
@@ -222,6 +225,7 @@ const RequestList = () => {
   };
   const handleRefresh = () => {
     setQuery((prv) => ({ ...prv, status: [] }));
+    statisticBarRef.current?.refetch();
   };
   return (
     <Space
@@ -235,6 +239,7 @@ const RequestList = () => {
       />
       <div className="flex gap-2">
         <StatisticBar
+          ref={statisticBarRef}
           onSelect={(status) => {
             setQuery((prv) => ({
               ...prv,

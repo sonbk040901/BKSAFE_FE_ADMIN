@@ -2,7 +2,7 @@ import { CarOutlined, RedoOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Space, Tag, notification } from "antd";
 import cn from "classnames";
-import { useDeferredValue, useEffect, useState, type FC } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { bookingApi } from "../../api";
 import { BookingStatus } from "../../api/types";
 import { subcribe } from "../../socket";
@@ -38,85 +38,95 @@ const getTagStatus = (status: BookingStatus) => {
 interface StatisticBarProps {
   onSelect?: (status?: BookingStatus) => void;
 }
+export interface StatisticBarRef {
+  refetch: () => void;
+}
 
-const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
-  useDeferredValue(onSelect);
-  const [notiApi, contextHolder] = notification.useNotification();
-  const {
-    data: statistic,
-    refetch: refetchStatistic,
-    isFetching,
-  } = useQuery({
-    queryFn: bookingApi.getStatistic,
-    refetchOnWindowFocus: false,
-    initialData: {},
-    queryKey: ["bookingStatistic"],
-  });
-  const [hasNoti, setHasNoti] = useState(false);
-  const total = Object.values(statistic).reduce((acc, value) => acc + value, 0);
-  useEffect(() => {
-    const cb = () => {
-      setHasNoti(true);
-      void refetchStatistic();
-      notiApi.open({
-        message: "Có yêu cầu mới",
-        description: "Có yêu cầu mới, vui lòng kiểm tra",
-        duration: 10,
-        type: "warning",
-      });
+const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
+  ({ onSelect }, ref) => {
+    const [notiApi, contextHolder] = notification.useNotification();
+    const {
+      data: statistic,
+      refetch: refetchStatistic,
+      isFetching,
+    } = useQuery({
+      queryFn: bookingApi.getStatistic,
+      refetchOnWindowFocus: false,
+      initialData: {},
+      queryKey: ["bookingStatistic"],
+    });
+    const [hasNoti, setHasNoti] = useState(false);
+    const total = Object.values(statistic).reduce(
+      (acc, value) => acc + value,
+      0,
+    );
+    useImperativeHandle(ref, () => ({
+      refetch: () => void refetchStatistic(), 
+    }));
+    useEffect(() => {
+      const cb = () => {
+        setHasNoti(true);
+        void refetchStatistic();
+        notiApi.open({
+          message: "Có yêu cầu mới",
+          description: "Có yêu cầu mới, vui lòng kiểm tra",
+          duration: 10,
+          type: "warning",
+        });
+      };
+      const unsubcribe1 = subcribe("booking/new-accepted", cb);
+      const unsubcribe2 = subcribe("booking/new-pending", cb);
+      return () => {
+        unsubcribe1();
+        unsubcribe2();
+      };
+    }, [notiApi, refetchStatistic]);
+    const handleClickStatus = (status?: BookingStatus) => {
+      setHasNoti(false);
+      onSelect?.(status);
     };
-    const unsubcribe1 = subcribe("booking/new-accepted", cb);
-    const unsubcribe2 = subcribe("booking/new-pending", cb);
-    return () => {
-      unsubcribe1();
-      unsubcribe2();
-    };
-  }, [notiApi, refetchStatistic]);
-  const handleClickStatus = (status?: BookingStatus) => {
-    setHasNoti(false);
-    onSelect?.(status);
-  };
-  return (
-    <div className="relative w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
-      {contextHolder}
-      <span className="absolute bottom-1 right-1 cursor-pointer">
-        <RedoOutlined
-          spin={isFetching}
-          onClick={() => void refetchStatistic()}
-        />
-      </span>
-      <Space key={"total"}>
-        <div className="flex flex-col gap-2">
-          <span>Tổng</span>
-          <div
-            className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
-            onClick={() => handleClickStatus()}
-          >
-            <CarOutlined />
-            <span className="font-semibold text-base">{total}</span>
-          </div>
-        </div>
-      </Space>
-      {Object.entries(statistic).map(([key, value]) => (
-        <Space key={key}>
+    return (
+      <div className="relative w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
+        {contextHolder}
+        <span className="absolute bottom-1 right-1 cursor-pointer">
+          <RedoOutlined
+            spin={isFetching}
+            onClick={() => void refetchStatistic()}
+          />
+        </span>
+        <Space key={"total"}>
           <div className="flex flex-col gap-2">
-            <span>{getTagStatus(key as BookingStatus)}</span>
+            <span>Tổng</span>
             <div
               className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
-              onClick={() => handleClickStatus(key as BookingStatus)}
+              onClick={() => handleClickStatus()}
             >
-              <CarOutlined
-                className={cn({
-                  "text-red-500 animate-bounce": key === "PENDING" && hasNoti,
-                })}
-              />
-              <span className="font-semibold text-base">{value}</span>
+              <CarOutlined />
+              <span className="font-semibold text-base">{total}</span>
             </div>
           </div>
         </Space>
-      ))}
-    </div>
-  );
-};
+        {Object.entries(statistic).map(([key, value]) => (
+          <Space key={key}>
+            <div className="flex flex-col gap-2">
+              <span>{getTagStatus(key as BookingStatus)}</span>
+              <div
+                className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
+                onClick={() => handleClickStatus(key as BookingStatus)}
+              >
+                <CarOutlined
+                  className={cn({
+                    "text-red-500 animate-bounce": key === "PENDING" && hasNoti,
+                  })}
+                />
+                <span className="font-semibold text-base">{value}</span>
+              </div>
+            </div>
+          </Space>
+        ))}
+      </div>
+    );
+  },
+);
 
 export default StatisticBar;
