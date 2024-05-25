@@ -1,6 +1,6 @@
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Button, Space, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Badge, Button, Space, Tag, Tooltip, Typography } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { driverApi } from "../api";
@@ -11,8 +11,8 @@ import {
   DriverStatus,
   PagingAndSortResponse,
 } from "../api/types";
-import timeDiff from "../utils/timeDiff";
 import StatisticBar from "../components/driver/StatisticBar";
+import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
   skip: 0,
@@ -48,6 +48,21 @@ const DriverList = () => {
             </Tooltip>
           );
         },
+      },
+      {
+        title: "Avatar",
+        key: "avatar",
+        dataIndex: "avatar",
+        width: 80,
+        render: (avatar: string) => (
+          <Avatar
+            shape="square"
+            icon={<UserOutlined />}
+            src={"https://i.pravatar.cc/300"}
+            size={60}
+            alt="avatar"
+          />
+        ),
       },
       {
         title: "Username",

@@ -5,6 +5,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import DriverList from "../pages/DriverList";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import UserList from "../pages/UserList";
 const MainLayout = Loader(
   lazy(async () => import("../layouts/MainLayout")),
   "App",
@@ -24,7 +25,11 @@ const Router = createBrowserRouter([
       {
         path: "drivers",
         element: <DriverList />,
-      }
+      },
+      {
+        path: "users",
+        element: <UserList />,
+      },
     ],
   },
   {

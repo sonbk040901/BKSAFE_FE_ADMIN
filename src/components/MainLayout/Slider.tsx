@@ -4,6 +4,7 @@ import Icon, {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { FC } from "react";
@@ -25,6 +26,11 @@ const items: MenuProps["items"] = [
     key: "/drivers",
     icon: <Icon component={() => <DriverIcon size={14} />} />,
     label: "Tài xế",
+  },
+  {
+    key: "/users",
+    icon: <UserOutlined />,
+    label: "Người dùng",
   },
 ];
 const Slider: FC = () => {
