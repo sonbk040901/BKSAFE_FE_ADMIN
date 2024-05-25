@@ -18,4 +18,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </QueryClientProvider>
     </ConfigProvider>
   </React.StrictMode>,
-);;
+);
