@@ -9,14 +9,14 @@ import { Input as BaseInput } from "antd";
 import { ComponentProps, useState, type FC } from "react";
 const getIcon = (type: InputType) => {
   const icons = {
-    email: <UserOutlined />,
+    phone: <UserOutlined />,
     password: <LockOutlined />,
     text: <InfoCircleOutlined />,
   };
   return icons[type];
 };
 
-type InputType = "email" | "password" | "text";
+type InputType = "phone" | "password" | "text";
 interface InputProps extends ComponentProps<typeof BaseInput> {
   type?: InputType;
 }

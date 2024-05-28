@@ -7,21 +7,18 @@ import { authApi } from "../../api";
 import { useAppDispatch } from "../../states";
 import { patchAccount } from "../../states/slices/account";
 import { Link } from "react-router-dom";
-type LoginValues = {
-  email: string;
-  password: string;
-};
+import { LoginDTO } from "../../api/auth";
 const Login = () => {
   const dispatch = useAppDispatch();
   const [rememberMe, setRememberMe] = useState(false);
   const { mutateAsync } = useMutation({
-    mutationFn: async (values: LoginValues) => {
+    mutationFn: async (values: LoginDTO) => {
       await authApi.login(values);
       return authApi.getProfile();
     },
   });
   const [form] = Form.useForm();
-  const handleFinish = (values: LoginValues) => {
+  const handleFinish = (values: LoginDTO) => {
     mutateAsync(values)
       .then((user) => {
         dispatch(patchAccount(user));
@@ -47,11 +44,11 @@ const Login = () => {
       />
       <div className="flex flex-col">
         <Form.Item
-          name="email"
-          label="Email"
+          name="phone"
+          label="Phone"
           rules={[{ required: true }]}
         >
-          <Input type="email" />
+          <Input type="phone" />
         </Form.Item>
         <Form.Item
           name="password"

@@ -1,11 +1,11 @@
 import instance from "./axios";
 import * as storage from "../utils/storage";
 import { Account } from "./types";
-interface LoginDTO {
-  email: string;
+export interface LoginDTO {
+  phone: string;
   password: string;
 }
-interface SignupDTO {
+export interface SignupDTO {
   username: string;
   password: string;
   email: string;
@@ -15,7 +15,7 @@ interface SignupDTO {
 
 export const login = async (login: LoginDTO) => {
   const path = "auth/login";
-  const res = await instance.post<string>(path, login);
+  const res = await instance.post<string>(path, { ...login, role: "ADMIN" });
   const token = res.data;
   storage.storeData("token", token);
   return token;
