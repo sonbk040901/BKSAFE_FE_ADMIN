@@ -4,7 +4,7 @@ import { ErrorResponse } from "./types";
 import { notification } from "antd";
 const { VITE_BACKEND_URL, VITE_BACKEND_PORT } = import.meta.env;
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-export const BASE_URL = `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}/`;
+export const BASE_URL = `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}/admin`;
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {

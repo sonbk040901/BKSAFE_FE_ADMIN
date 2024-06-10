@@ -13,7 +13,7 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { userApi } from "../api";
-import { PagingAndSortResponse, User } from "../api/types";
+import { ActivateStatus, PagingAndSortResponse, User } from "../api/types";
 import { GetAllPagingAndSortDto } from "../api/user";
 import timeDiff from "../utils/timeDiff";
 import StatisticBar from "../components/user/StatisticBar";
@@ -114,14 +114,32 @@ const UserList = () => {
     {
       title: "Trạng thái",
       key: "isActivated",
-      dataIndex: "isActivated",
-      render: (isActivated: boolean) => {
+      dataIndex: "activateStatus",
+      render: (activateStatus: ActivateStatus) => {
         return (
           <Badge
-            color={isActivated ? "green" : "red"}
+            color={
+              activateStatus === "ACTIVATED"
+                ? "green"
+                : activateStatus === "BLOCKED"
+                ? "red"
+                : "orange"
+            }
             text={
-              <Typography.Text type={isActivated ? "success" : "danger"}>
-                {isActivated ? "Đã kích hoạt" : "Chưa kích hoạt"}
+              <Typography.Text
+                type={
+                  activateStatus === "ACTIVATED"
+                    ? "success"
+                    : activateStatus === "BLOCKED"
+                    ? "danger"
+                    : "warning"
+                }
+              >
+                {activateStatus === "ACTIVATED"
+                  ? "Đã kích hoạt"
+                  : activateStatus === "BLOCKED"
+                  ? "Đã chặn"
+                  : "Chưa kích hoạt"}
               </Typography.Text>
             }
           ></Badge>

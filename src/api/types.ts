@@ -42,7 +42,7 @@ export interface Account {
   fullName: string;
   avatar: string | null;
   gender: Gender;
-  driver: Driver | null;
+  activateStatus: ActivateStatus;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface User extends Account {}
@@ -61,7 +61,8 @@ export interface License {
   classType: string;
 }
 export type DriverStatus = "AVAILABLE" | "BUSY" | "OFFLINE";
-export type ActivateStatus = "DEACTIVATED" | "ACTIVATED" | "REJECTED";
+export type ActivateStatus = "DEACTIVATED" | "ACTIVATED" | "BLOCKED";
+export type RegisterStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 export interface Driver extends Account {
   name: string;
   phone: string;
@@ -72,7 +73,7 @@ export interface Driver extends Account {
   address: string;
   location: Location;
   license: License;
-  activateStatus: ActivateStatus;
+  registerStatus: ActivateStatus;
   status: DriverStatus;
 }
 export interface SuggestDriver extends Driver {

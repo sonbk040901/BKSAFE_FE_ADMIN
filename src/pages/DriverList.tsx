@@ -10,6 +10,7 @@ import {
   Driver,
   DriverStatus,
   PagingAndSortResponse,
+  RegisterStatus,
 } from "../api/types";
 import StatisticBar from "../components/driver/StatisticBar";
 import timeDiff from "../utils/timeDiff";
@@ -141,23 +142,23 @@ const DriverList = () => {
       },
       {
         title: "Trạng thái kích hoạt",
-        key: "activateStatus",
-        dataIndex: "activateStatus",
+        key: "registerStatus",
+        dataIndex: "registerStatus",
         width: 200,
-        render: (activateStatus: ActivateStatus) => {
+        render: (status: RegisterStatus) => {
           return (
             <Typography.Text
               type={
-                activateStatus === "DEACTIVATED"
+                status === "PENDING"
                   ? "warning"
-                  : activateStatus === "ACTIVATED"
+                  : status === "ACCEPTED"
                   ? "success"
                   : "danger"
               }
             >
-              {activateStatus === "DEACTIVATED" ? (
+              {status === "PENDING" ? (
                 <Tag color="orange">Chờ duyệt</Tag>
-              ) : activateStatus === "ACTIVATED" ? (
+              ) : status === "ACCEPTED" ? (
                 <Tag color="success">Đã kích hoạt</Tag>
               ) : (
                 <Tag color="error">Đã từ chối</Tag>

@@ -15,7 +15,7 @@ export interface SignupDTO {
 
 export const login = async (login: LoginDTO) => {
   const path = "auth/login";
-  const res = await instance.post<string>(path, { ...login, role: "ADMIN" });
+  const res = await instance.post<string>(path, login);
   const token = res.data;
   storage.storeData("token", token);
   return token;
@@ -29,7 +29,7 @@ export const logout = () => {
   storage.removeData("user");
 };
 export const getProfile = async () => {
-  const path = "auth/admin-info";
+  const path = "profile";
   const res = await instance.get<Account>(path);
   return res.data;
 };

@@ -1,10 +1,8 @@
 import { RedoOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Space, Typography } from "antd";
-import classNames from "classnames";
 import { useState, type FC } from "react";
 import { userApi } from "../../api";
-import type { ActivateStatus, DriverStatus } from "../../api/types";
 
 interface StatisticBarProps {
   onSelect?: (isActivated: boolean | undefined) => void;
@@ -20,8 +18,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
     queryFn: userApi.getStatistic,
     refetchOnWindowFocus: false,
     initialData: {
-      active: 0,
-      inactive: 0,
+      activated: 0,
+      blocked: 0,
+      deactivated: 0,
       total: 0,
     },
     queryKey: ["userStatistic"],
@@ -34,7 +33,7 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   //   // onSelect?.(onStatus, activateStatus);
   // };
   return (
-    <div className="relative w-[400px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-3 gap-3 shadow-sm">
+    <div className="relative w-[510px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 shadow-sm">
       <span className="absolute bottom-1 right-1 cursor-pointer">
         <RedoOutlined
           spin={isFetching}
@@ -69,7 +68,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
             //   "text-red-500 animate-bounce": key === "PENDING" && hasNoti,
             // })}
             />
-            <span className="font-semibold text-base">{statistic.active}</span>
+            <span className="font-semibold text-base">
+              {statistic.activated}
+            </span>
           </div>
         </div>
       </Space>
@@ -77,9 +78,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
         <div className="flex flex-col gap-2">
           <span>
             <Badge
-              status="error"
+              status="warning"
               text={
-                <Typography.Text type="danger">Chưa kích hoạt</Typography.Text>
+                <Typography.Text type="warning">Chưa kích hoạt</Typography.Text>
               }
             />
           </span>
@@ -90,8 +91,26 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
             // })}
             />
             <span className="font-semibold text-base">
-              {statistic.inactive}
+              {statistic.deactivated}
             </span>
+          </div>
+        </div>
+      </Space>
+      <Space className="">
+        <div className="flex flex-col gap-2">
+          <span>
+            <Badge
+              status="error"
+              text={<Typography.Text type="danger">Đã chặn</Typography.Text>}
+            />
+          </span>
+          <div className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1">
+            <UserOutlined
+            // className={classNames({
+            //   "text-red-500 animate-bounce": key === "PENDING" && hasNoti,
+            // })}
+            />
+            <span className="font-semibold text-base">{statistic.blocked}</span>
           </div>
         </div>
       </Space>

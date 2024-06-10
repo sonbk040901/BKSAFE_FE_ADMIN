@@ -4,7 +4,11 @@ import { Badge, Space, Tag } from "antd";
 import classNames from "classnames";
 import { useState, type FC } from "react";
 import { driverApi } from "../../api";
-import type { ActivateStatus, DriverStatus } from "../../api/types";
+import type {
+  ActivateStatus,
+  DriverStatus,
+  RegisterStatus,
+} from "../../api/types";
 import { DriverIcon } from "../../icons";
 
 interface StatisticBarProps {
@@ -17,16 +21,17 @@ interface StatisticBarProps {
 const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
   const [hasNoti, setHasNoti] = useState(false);
   const {
-    data: { activateStatus, status, total },
+    data: { activateStatus, registerStatus, status, total },
     refetch: refetchStatistic,
     isFetching,
   } = useQuery({
     queryFn: driverApi.getStatistic,
     refetchOnWindowFocus: false,
     initialData: {
+      total: 0,
       status: {},
       activateStatus: {},
-      total: 0,
+      registerStatus: {},
     },
     queryKey: ["driverStatistic"],
   });
@@ -60,13 +65,13 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
           </div>
         </div>
       </Space>
-      {Object.entries(activateStatus).map(([key, value]) => (
+      {Object.entries(registerStatus).map(([key, value]) => (
         <Space key={key}>
           <div className="flex flex-col gap-2">
             <span>
-              {key === "DEACTIVATED" ? (
+              {key === "PENDING" ? (
                 <Tag color="orange">Chờ duyệt</Tag>
-              ) : key === "ACTIVATED" ? (
+              ) : key === "ACCEPTED" ? (
                 <Tag color="success">Đã kích hoạt</Tag>
               ) : (
                 <Tag color="error">Đã từ chối</Tag>

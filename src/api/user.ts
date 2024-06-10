@@ -5,16 +5,17 @@ export interface GetAllPagingAndSortDto extends PagingAndSortDto {
   isActivated?: boolean | boolean[];
 }
 export const getAll = async (dto: Type<GetAllPagingAndSortDto> = {}) => {
-  const path = `admin/users`;
+  const path = `users`;
   const url = buildUrl(path, dto);
   const res = await instance.get<PagingAndSortResponse<User>>(url);
   return res.data;
 };
 export const getStatistic = async () => {
-  const path = `admin/users/statistic`;
+  const path = `users/statistic`;
   const res = await instance.get<{
-    active: number;
-    inactive: number;
+    deactivated: number;
+    activated: number;
+    blocked: number;
     total: number;
   }>(path);
   return res.data;
