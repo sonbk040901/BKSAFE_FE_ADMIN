@@ -31,5 +31,5 @@ export default function timeDiff(dateStr: string | Date) {
       dateFormated,
     ];
   }
-  return [dateFormated, dateFormated];
+  return [dateFormated, dateFormated] as const;
 }
