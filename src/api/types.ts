@@ -92,7 +92,8 @@ export type BookingStatus =
   | "REJECTED"
   | "CANCELLED"
   | "DRIVING"
-  | "COMPLETED";
+  | "COMPLETED"
+  | "TIMEOUT";
 export interface Booking {
   locations: Location[];
   notes: Note[];

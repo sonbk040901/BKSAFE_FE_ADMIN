@@ -39,7 +39,8 @@ const getTagStatus = (status: Booking["status"]) => {
       return <Tag color="purple">Đang thực hiện</Tag>;
     case "COMPLETED":
       return <Tag color="green">Kết thúc</Tag>;
-
+    case "TIMEOUT":
+      return <Tag color="magenta">Hết thời gian</Tag>;
     default:
       break;
   }
@@ -187,7 +188,7 @@ const RequestList = () => {
                 onClick={() => setBooking(record)}
               />
             </Tooltip>
-            {record.status === "PENDING" && (
+            {(record.status === "PENDING" || record.status === "ACCEPTED" )&& (
               <Tooltip
                 color="white"
                 title={<p className="text-slate-950">Xử lý</p>}

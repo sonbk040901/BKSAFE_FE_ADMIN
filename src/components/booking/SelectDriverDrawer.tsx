@@ -1,5 +1,9 @@
-import { CloseCircleOutlined, ReloadOutlined } from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  CloseCircleOutlined,
+  ReloadOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Carousel, Drawer, Modal, message } from "antd";
 import { type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
@@ -40,15 +44,6 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
     initialData,
     refetchOnWindowFocus: false,
   });
-  const { mutateAsync } = useMutation({
-    mutationFn: async ({
-      driverId,
-      bookingId,
-    }: {
-      driverId: number;
-      bookingId: number;
-    }) => bookingApi.suggestDriver(bookingId, driverId),
-  });
   const { data } = dto;
   const handleSelect = (driverId: number) => {
     if (!bookingId) return;
@@ -56,21 +51,79 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
       title: "Xác nhận chọn tài xế",
       icon: null,
       content: <p> Bạn có chắc chắn muốn chọn tài xế này? </p>,
-      okText: "Từ chối",
+      okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: () => {
         const key = "suggestDriver";
         void messageApi.loading({ content: "Đang chọn tài xế...", key });
-        mutateAsync({ bookingId, driverId })
+        bookingApi
+          .suggestDriver(bookingId, driverId)
           .then(() => {
             void messageApi.success({ content: "Chọn tài xế thành công", key });
-            onClose?.();
+            refetch();
           })
           .catch(() => {
             void messageApi.error({ content: "Chọn tài xế thất bại", key });
           });
       },
     });
+  };
+  const handleTimeout = () => {
+    if (!bookingId) return;
+    modal.confirm({
+      title: "Xác nhận dừng tìm thấy tài xế",
+      icon: null,
+      content: <p> Bạn có chắc chắn muốn dừng tìm tài xế không? </p>,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: () => {
+        const key = "stopFindDriver";
+        void messageApi.loading({ content: "Đang dừng tìm tài xế...", key });
+        bookingApi
+          .stopFindDriver(bookingId)
+          .then(() => {
+            void messageApi.success({
+              content: "Dừng tìm tài xế thành công",
+              key,
+            });
+            onClose?.();
+          })
+          .catch(() => {
+            void messageApi.error({ content: "Dừng tìm tài xế thất bại", key });
+          });
+      },
+    });
+  };
+  const handleSelectAll = () => {
+    if (!bookingId) return;
+    modal.confirm({
+      title: "Xác nhận chọn tất cả tài xế",
+      icon: null,
+      content: <p> Bạn có chắc chắn muốn chọn tài xế này? </p>,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: () => {
+        const key = "suggestDriver";
+        void messageApi.loading({ content: "Đang chọn tài xế...", key });
+        Promise.allSettled(
+          data.map(({ id }) => bookingApi.suggestDriver(bookingId, id)),
+        )
+          .then(() => {
+            void messageApi.success({
+              content: "Chọn tất cả tài xế thành công",
+              key,
+            });
+            refetch();
+          })
+          .catch(() => {
+            void messageApi.error({
+              content: "Chọn tất cả tài xế thất bại",
+              key,
+            });
+          });
+      },
+    });
+    // dto.data.forEach(({ id }) => handleSelect(id));
   };
   return (
     <Drawer
@@ -103,10 +156,28 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
           ))}
         </Carousel>
         <div className="text-end space-x-2 pb-2">
+          {data.length === 0 ? (
+            <Button
+              icon={<StopOutlined />}
+              onClick={handleTimeout}
+              type="default"
+              className=""
+            >
+              Dừng tìm
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSelectAll}
+              type="primary"
+              className=""
+            >
+              Chọn tất cả
+            </Button>
+          )}
           <Button
             icon={<ReloadOutlined />}
             onClick={() => void refetch()}
-            type="primary"
+            type="default"
             className=""
           >
             Làm mới

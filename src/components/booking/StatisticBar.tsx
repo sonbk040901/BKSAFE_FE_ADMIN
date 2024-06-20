@@ -29,7 +29,8 @@ const getTagStatus = (status: BookingStatus) => {
       );
     case "COMPLETED":
       return <Tag color="green">Kết thúc</Tag>;
-
+    case "TIMEOUT":
+      return <Tag color="magenta">Hết thời gian</Tag>;
     default:
       break;
   }

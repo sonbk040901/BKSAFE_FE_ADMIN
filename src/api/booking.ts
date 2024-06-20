@@ -35,6 +35,11 @@ export const suggestDriver = async (bookingId: number, driverId: number) => {
   const res = await instance.post<void>(path);
   return res.data;
 };
+export const stopFindDriver = async (bookingId: number) => {
+  const path = `bookings/${bookingId}/timeout`;
+  const res = await instance.patch<void>(path);
+  return res.data;
+}
 export const getStatistic = async () => {
   const path = `bookings/statistic`;
   const res = await instance.get<BookingStatistic>(path);
