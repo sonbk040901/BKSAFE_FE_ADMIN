@@ -1,6 +1,6 @@
 import { RedoOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Space, Typography } from "antd";
+import { Badge, Space, Tag, Typography } from "antd";
 import { useState, type FC } from "react";
 import { userApi } from "../../api";
 
@@ -55,9 +55,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
       <Space>
         <div className="flex flex-col gap-2">
           <span>
-            <Badge
-              status="success"
-              text={
+            <Tag
+              color="success"
+              children={
                 <Typography.Text type="success">Đã kích hoạt</Typography.Text>
               }
             />
@@ -77,9 +77,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
       <Space className="">
         <div className="flex flex-col gap-2">
           <span>
-            <Badge
-              status="warning"
-              text={
+            <Tag
+              color="warning"
+              children={
                 <Typography.Text type="warning">Chưa kích hoạt</Typography.Text>
               }
             />
@@ -99,9 +99,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
       <Space className="">
         <div className="flex flex-col gap-2">
           <span>
-            <Badge
-              status="error"
-              text={<Typography.Text type="danger">Đã chặn</Typography.Text>}
+            <Tag
+              color="error"
+              children={<Typography.Text type="danger">Đã chặn</Typography.Text>}
             />
           </span>
           <div className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1">

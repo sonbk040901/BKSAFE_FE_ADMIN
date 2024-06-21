@@ -1,17 +1,12 @@
 import { EyeOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Badge, Button, Space, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Button, Space, Tag, Tooltip, Typography } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { driverApi } from "../api";
 import { GetDriversPagingAndSortDto } from "../api/driver";
-import {
-  Driver,
-  DriverStatus,
-  PagingAndSortResponse,
-  RegisterStatus,
-} from "../api/types";
-import StatisticBar from "../components/driver/StatisticBar";
+import { Driver, PagingAndSortResponse, RegisterStatus } from "../api/types";
 import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
@@ -22,15 +17,21 @@ const initialData: PagingAndSortResponse<Driver> = {
   sort: "id",
 };
 
-const DriverList = () => {
-  const [, setDriver] = useState<Driver>();
+const PendingDriverList = () => {
   const [query, setQuery] = useState<GetDriversPagingAndSortDto>(initialData);
   const { data, isFetching } = useQuery({
-    queryFn: () => driverApi.getAll(query),
+    queryFn: () => driverApi.getAllRegister(query),
     initialData,
-    queryKey: ["get-drivers", query.order, query.sort, query.skip, query.take],
+    queryKey: [
+      "get-pending-drivers",
+      query.order,
+      query.sort,
+      query.skip,
+      query.take,
+    ],
     refetchOnWindowFocus: false,
   });
+  const navigate = useNavigate();
   const columns: ColumnsType<Driver> = useMemo(
     () => [
       {
@@ -54,7 +55,7 @@ const DriverList = () => {
         key: "avatar",
         dataIndex: "avatar",
         width: 80,
-        render: (avatar: string) => (
+        render: () => (
           <Avatar
             shape="square"
             icon={<UserOutlined />}
@@ -78,40 +79,6 @@ const DriverList = () => {
         title: "Điện thoại",
         key: "phone",
         dataIndex: "phone",
-      },
-      {
-        title: "Trạng thái nhận chuyến",
-        key: "status",
-        dataIndex: "status",
-        width: 200,
-        render: (status: DriverStatus) => {
-          switch (status) {
-            case "OFFLINE":
-              return (
-                <Badge
-                  status="error"
-                  text={<span className="text-[#ff4d4f]">Ngoại tuyến</span>}
-                />
-              );
-            case "BUSY":
-              return (
-                <Badge
-                  status="warning"
-                  text={<span className="text-[#faad14]">Đang bận</span>}
-                />
-              );
-            case "AVAILABLE":
-              return (
-                <Badge
-                  status="processing"
-                  color="green"
-                  text={<span className="text-[#52c41a]">Trực tuyến</span>}
-                />
-              );
-            default:
-              break;
-          }
-        },
       },
       {
         title: "Thời gian tạo",
@@ -145,10 +112,12 @@ const DriverList = () => {
                   : "danger"
               }
             >
-              {status === "ACCEPTED" ? (
-                <Tag color="success">Đã kích hoạt</Tag>
+              {status === "PENDING" ? (
+                <Tag color="orange">Chờ duyệt</Tag>
+              ) : status === "ACCEPTED" ? (
+                <Tag color="success">Đã duyệt</Tag>
               ) : (
-                <Tag color="error">Đã chặn</Tag>
+                <Tag color="error">Đã từ chối</Tag>
               )}
             </Typography.Text>
           );
@@ -168,14 +137,14 @@ const DriverList = () => {
                 size="small"
                 icon={<EyeOutlined />}
                 type="text"
-                onClick={() => setDriver(record)}
+                onClick={() => navigate(`${record.id}`)}
               />
             </Tooltip>
           </Space>
         ),
       },
     ],
-    [],
+    [navigate],
   );
   return (
     <Space
@@ -183,7 +152,7 @@ const DriverList = () => {
       direction="vertical"
     >
       <div className="flex gap-2">
-        <StatisticBar
+        {/* <StatisticBar
           onSelect={(status) => {
             setQuery((prv) => ({
               ...prv,
@@ -191,7 +160,7 @@ const DriverList = () => {
               status: status ? [status] : [],
             }));
           }}
-        />
+        /> */}
       </div>
 
       <Table
@@ -225,4 +194,4 @@ const DriverList = () => {
   );
 };
 
-export default DriverList;
+export default PendingDriverList;

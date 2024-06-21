@@ -60,26 +60,16 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
           </div>
         </div>
       </Space>
-      {Object.entries(status).map(([key, value]) => (
+      {Object.entries(activateStatus).map(([key, value]) => (
         <Space key={key}>
           <div className="flex flex-col gap-2">
             <span>
-              {key === "OFFLINE" ? (
-                <Badge
-                  status="error"
-                  text={<span className="text-[#ff4d4f]">Ngoại tuyến</span>}
-                />
-              ) : key === "BUSY" ? (
-                <Badge
-                  status="warning"
-                  text={<span className="text-[#faad14]">Đang bận</span>}
-                />
+              {key === "PENDING" ? (
+                <Tag color="orange">Chờ duyệt</Tag>
+              ) : key === "ACTIVATED" ? (
+                <Tag color="success">Đã kích hoạt</Tag>
               ) : (
-                <Badge
-                  status="processing"
-                  color="green"
-                  text={<span className="text-[#52c41a]">Trực tuyến</span>}
-                />
+                <Tag color="error">Đã từ chối</Tag>
               )}
             </span>
             <div
@@ -100,16 +90,26 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
           </div>
         </Space>
       ))}
-      {Object.entries(activateStatus).map(([key, value]) => (
+      {Object.entries(status).map(([key, value]) => (
         <Space key={key}>
           <div className="flex flex-col gap-2">
             <span>
-              {key === "PENDING" ? (
-                <Tag color="orange">Chờ duyệt</Tag>
-              ) : key === "ACTIVATED" ? (
-                <Tag color="success">Đã kích hoạt</Tag>
+              {key === "OFFLINE" ? (
+                <Badge
+                  status="error"
+                  text={<span className="text-[#ff4d4f]">Ngoại tuyến</span>}
+                />
+              ) : key === "BUSY" ? (
+                <Badge
+                  status="warning"
+                  text={<span className="text-[#faad14]">Đang bận</span>}
+                />
               ) : (
-                <Tag color="error">Đã từ chối</Tag>
+                <Badge
+                  status="processing"
+                  color="green"
+                  text={<span className="text-[#52c41a]">Trực tuyến</span>}
+                />
               )}
             </span>
             <div

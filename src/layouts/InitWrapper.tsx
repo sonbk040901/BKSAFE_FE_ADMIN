@@ -16,7 +16,7 @@ const InitWrapper: FC<PropsWithChildren> = ({ children }) => {
   });
   const [socketConnecting, setSocketConnecting] = useState(true);
   useEffect(() => {
-    if (status === "loading") return;
+    if (status === "pending") return;
     socket.createConnect();
     setSocketConnecting(false);
     return () => {

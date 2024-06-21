@@ -7,6 +7,7 @@ import {
   Image,
   Space,
   Table,
+  Tag,
   Tooltip,
   Typography,
 } from "antd";
@@ -71,16 +72,6 @@ const UserList = () => {
       ),
     },
     {
-      title: "Username",
-      key: "username",
-      dataIndex: "username",
-      render: (username: string, record) => (
-        <Typography.Link onClick={() => setUser(record)}>
-          {username}
-        </Typography.Link>
-      ),
-    },
-    {
       title: "Email",
       key: "email",
       dataIndex: "email",
@@ -117,7 +108,7 @@ const UserList = () => {
       dataIndex: "activateStatus",
       render: (activateStatus: ActivateStatus) => {
         return (
-          <Badge
+          <Tag
             color={
               activateStatus === "ACTIVATED"
                 ? "green"
@@ -125,7 +116,7 @@ const UserList = () => {
                 ? "red"
                 : "orange"
             }
-            text={
+            children={
               <Typography.Text
                 type={
                   activateStatus === "ACTIVATED"
@@ -142,7 +133,7 @@ const UserList = () => {
                   : "Chưa kích hoạt"}
               </Typography.Text>
             }
-          ></Badge>
+          />
         );
       },
     },

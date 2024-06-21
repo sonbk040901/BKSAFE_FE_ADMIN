@@ -23,20 +23,26 @@ const items: MenuProps["items"] = [
     label: "Yêu cầu",
   },
   {
+    key: "/users",
+    icon: <UserOutlined />,
+    label: "Người dùng",
+  },
+  {
     key: "/drivers",
     icon: <Icon component={() => <DriverIcon size={14} />} />,
     label: "Tài xế",
   },
   {
-    key: "/users",
-    icon: <UserOutlined />,
-    label: "Người dùng",
+    key: "/pending-drivers",
+    icon: <Icon component={() => <DriverIcon size={14} />} />,
+    label: "Tài xế chờ duyệt",
   },
 ];
 const Slider: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { pathname } = useLocation();
+  const [, path] = pathname.split("/");
   const [collapsed, setCollapsed] = useLocalStorage("collapsed", false);
   return (
     <Sider
@@ -57,7 +63,7 @@ const Slider: FC = () => {
         </div>
         <div className="flex-1">
           <Menu
-            defaultSelectedKeys={[pathname]}
+            defaultSelectedKeys={[`/${path}`]}
             theme="light"
             mode="inline"
             items={items}

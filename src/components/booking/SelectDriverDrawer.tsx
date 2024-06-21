@@ -47,7 +47,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
   const { data } = dto;
   const handleSelect = (driverId: number) => {
     if (!bookingId) return;
-    modal.confirm({
+    void modal.confirm({
       title: "Xác nhận chọn tài xế",
       icon: null,
       content: <p> Bạn có chắc chắn muốn chọn tài xế này? </p>,
@@ -60,7 +60,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
           .suggestDriver(bookingId, driverId)
           .then(() => {
             void messageApi.success({ content: "Chọn tài xế thành công", key });
-            refetch();
+            void refetch();
           })
           .catch(() => {
             void messageApi.error({ content: "Chọn tài xế thất bại", key });
@@ -70,7 +70,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
   };
   const handleTimeout = () => {
     if (!bookingId) return;
-    modal.confirm({
+    void modal.confirm({
       title: "Xác nhận dừng tìm thấy tài xế",
       icon: null,
       content: <p> Bạn có chắc chắn muốn dừng tìm tài xế không? </p>,
@@ -96,7 +96,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
   };
   const handleSelectAll = () => {
     if (!bookingId) return;
-    modal.confirm({
+    void modal.confirm({
       title: "Xác nhận chọn tất cả tài xế",
       icon: null,
       content: <p> Bạn có chắc chắn muốn chọn tài xế này? </p>,
@@ -113,7 +113,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
               content: "Chọn tất cả tài xế thành công",
               key,
             });
-            refetch();
+            void refetch();
           })
           .catch(() => {
             void messageApi.error({
@@ -186,7 +186,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
             icon={<CloseCircleOutlined />}
             onClick={() => {
               if (!bookingId) return;
-              modal.confirm({
+              void modal.confirm({
                 title: "Từ chối yêu cầu",
                 icon: null,
                 content: (

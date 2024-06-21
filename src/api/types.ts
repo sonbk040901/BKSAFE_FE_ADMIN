@@ -60,11 +60,23 @@ export interface License {
   expireDate: string;
   classType: string;
 }
+export interface Cccd {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  frontImage: string;
+  backImage: string;
+  number: string;
+  fullName: string;
+  address: string;
+  birthday: string;
+  issueDate: string;
+  expireDate: string;
+}
 export type DriverStatus = "AVAILABLE" | "BUSY" | "OFFLINE";
 export type ActivateStatus = "DEACTIVATED" | "ACTIVATED" | "BLOCKED";
 export type RegisterStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 export interface Driver extends Account {
-  name: string;
   phone: string;
   email: string;
   avatar: string;
@@ -73,7 +85,8 @@ export interface Driver extends Account {
   address: string;
   location: Location;
   license: License;
-  registerStatus: ActivateStatus;
+  cccd: Cccd;
+  registerStatus: RegisterStatus;
   status: DriverStatus;
 }
 export interface SuggestDriver extends Driver {

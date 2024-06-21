@@ -9,8 +9,7 @@ import {
   RegisterStatus,
 } from "./types";
 export interface GetDriversPagingAndSortDto extends PagingAndSortDto {
-  status?: DriverStatus | DriverStatus[];
-  activateStatus?: ActivateStatus;
+  registerStatus?: RegisterStatus | RegisterStatus[];
 }
 export type DriverStatusStatistic = {
   [key in DriverStatus]?: number;
@@ -24,7 +23,6 @@ export type RegisterStatusStatistic = {
 export type DriverStatistic = {
   total: number;
   status: DriverStatusStatistic;
-  registerStatus: RegisterStatusStatistic;
   activateStatus: ActivateStatusStatistic;
 };
 export const getAll = async (getAllDto: Type<GetDriversPagingAndSortDto>) => {
@@ -33,8 +31,28 @@ export const getAll = async (getAllDto: Type<GetDriversPagingAndSortDto>) => {
   const res = await instance.get<PagingAndSortResponse<Driver>>(url);
   return res.data;
 };
+export const getAllRegister = async (
+  getAllDto: Type<GetDriversPagingAndSortDto>,
+) => {
+  const path = "drivers/register";
+  const url = buildUrl(path, getAllDto);
+  const res = await instance.get<PagingAndSortResponse<Driver>>(url);
+  return res.data;
+};
+export const getDetail = async (id: number) => {
+  const path = `drivers/${id}`;
+  const res = await instance.get<Driver>(path);
+  return res.data;
+};
 export const getStatistic = async () => {
   const path = "drivers/statistic";
   const res = await instance.get<DriverStatistic>(path);
+  return res.data;
+};
+export const actionRegister = async (id: number, status: RegisterStatus) => {
+  const path = `drivers/${id}/action-register`;
+  const res = await instance.patch<Driver>(path, {
+    status,
+  });
   return res.data;
 };
