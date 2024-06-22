@@ -98,11 +98,11 @@ const DriverDetail = () => {
       await refetch();
     };
   return (
-    <div className="w-full h-full p-2 flex flex-col gap-3">
+    <div className="w-full h-full p-2 flex flex-col gap-3 overflow-scroll">
       <div className="flex-1 flex flex-row gap-10 items-start">
         <Card className="">
           <Space direction="vertical">
-            <span className="text-lg font-semibold">Thông tin cá nhân</span>
+            <span className="text-lg font-semibold">Thông tin tài xế {data.fullName}</span>
             <Badge
               count={renderGender(data.gender)}
               offset={[-12, 12]}

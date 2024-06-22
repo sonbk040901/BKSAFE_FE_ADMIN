@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Switch } from "antd";
+import { Form, Switch } from "antd";
 import { bookingApi } from "../../api";
 
 const SwitchMode = () => {
@@ -11,16 +11,15 @@ const SwitchMode = () => {
   });
   const {
     data = mode,
-    isLoading: isUpdating,
+    isPending,
     mutate,
   } = useMutation({
     mutationFn: bookingApi.changeFindDriverMode,
   });
   return (
-    <div className="space-x-1">
-      <label htmlFor="switch-mode">Chế độ tìm</label>
+    <Form.Item label="Chế độ tìm tài xế">
       <Switch
-        loading={isLoading || isUpdating}
+        loading={isLoading || isPending}
         checked={data}
         onChange={(e) => {
           mutate(e);
@@ -29,7 +28,7 @@ const SwitchMode = () => {
         checkedChildren="Tự động"
         unCheckedChildren="Thủ công"
       />
-    </div>
+    </Form.Item>
   );
 };
 

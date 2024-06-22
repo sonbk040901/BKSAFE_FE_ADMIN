@@ -4,7 +4,7 @@ import Icon, {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { FC } from "react";

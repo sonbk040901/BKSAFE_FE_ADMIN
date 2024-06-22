@@ -13,7 +13,6 @@ import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
 import StatisticBar, {
   StatisticBarRef,
 } from "../components/booking/StatisticBar";
-import SwitchMode from "../components/booking/SwitchMode";
 import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
@@ -238,7 +237,6 @@ const RequestList = () => {
             }));
           }}
         />
-        <SwitchMode />
       </div>
       <Table
         rowKey={(record) => record.id}
