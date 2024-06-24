@@ -24,11 +24,12 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { driverApi } from "../api";
 import { Driver, RegisterStatus } from "../api/types";
+import CccdTab from "../components/pedingDriver/CccdTab";
+import LicenseTab from "../components/pedingDriver/LicenseTab";
 import { FemaleIcon, MaleIcon, OtherGenderIcon } from "../icons";
 import IconGenderMaleFemale from "../icons/IconGenderMaleFemale";
 import IconLocationPoint from "../icons/IconLocationPoint";
-import CccdTab from "../components/pedingDriver/CccdTab";
-import LicenseTab from "../components/pedingDriver/LicenseTab";
+import InfoItem, { InfoItemProps } from "../components/booking/InfoItem";
 const renderGender = (gender: Driver["gender"]) => {
   return (
     <span className="w-7 aspect-square border-slate-200 border-[1px] border-solid bg-slate-100 rounded-full grid place-items-center">
@@ -82,6 +83,33 @@ const DriverDetail = () => {
       children: data.license ? <LicenseTab data={data.license} /> : null,
     },
   ];
+  const infoItems: InfoItemProps[] = [
+    { label: "Họ tên", value: data.fullName },
+    { label: "Số điện thoại", value: data.phone },
+    { label: "Email", value: data.email },
+    {
+      label: "Ngày sinh",
+      value: new Date(data.birthday).toLocaleDateString("vi"),
+    },
+    {
+      label: "Giới tính",
+      value: (
+        <>
+          {
+            {
+              MALE: "Nam",
+              FEMALE: "Nữ",
+              OTHER: "Khác",
+            }[data.gender]
+          }
+        </>
+      ),
+    },
+    {
+      label: "Địa chỉ",
+      value: <div className="w-44 text-right">{data.address}</div>,
+    },
+  ];
   const handleAction =
     (status: RegisterStatus): (() => void) =>
     async () => {
@@ -99,69 +127,28 @@ const DriverDetail = () => {
     };
   return (
     <div className="w-full h-full p-2 flex flex-col gap-3 overflow-scroll">
-      <div className="flex-1 flex flex-row gap-10 items-start">
-        <Card className="">
-          <Space direction="vertical">
-            <span className="text-lg font-semibold">Thông tin tài xế {data.fullName}</span>
-            <Badge
-              count={renderGender(data.gender)}
-              offset={[-12, 12]}
-              color="magenta"
-            >
-              <Avatar
-                size={100}
+      <div className="flex-1 flex gap-10 items-start">
+        <Card className="w-72">
+          <Space
+            direction="vertical"
+            className="w-full"
+          >
+            <span className="text-gray-500 text-lg font-semibold">
+              Thông tin tài xế {data.fullName}
+            </span>
+            <div className="mb-2">
+              <Image
                 alt="avatar"
                 className="cursor-pointer border border-pink-200"
                 src={data.avatar ?? "https://i.pravatar.cc/300"}
-                onClick={() => setPreview(true)}
               />
-            </Badge>
-            <Space>
-              <UserOutlined />
-              <span className="text-lg font-light">{data.fullName}</span>
-            </Space>
-            <Space>
-              <PhoneOutlined />
-              <span className="text-lg font-light">{data.phone}</span>
-            </Space>
-            <Space>
-              <MailOutlined />
-              <span className="text-lg font-light">{data.email}</span>
-            </Space>
-            <Space>
-              <IconLocationPoint />
-              <span className="text-lg font-light w-52 truncate block">
-                {data.address}
-              </span>
-            </Space>
-            <Space>
-              <CalendarOutlined />
-              <span className="text-lg font-light">
-                {new Date(data.birthday).toLocaleDateString("vi")} (
-                {new Date().getFullYear() -
-                  new Date(data.birthday).getFullYear()}
-                )
-              </span>
-            </Space>
-            <Space>
-              <IconGenderMaleFemale />
-              <span className="text-lg font-light">
-                {
-                  {
-                    MALE: "Nam",
-                    FEMALE: "Nữ",
-                    OTHER: "Khác",
-                  }[data.gender]
-                }
-              </span>
-            </Space>
-            <Image
-              preview={{
-                visible: preview,
-                onVisibleChange: (visible) => setPreview(visible),
-                src: data.avatar ?? "https://i.pravatar.cc/300",
-              }}
-            />
+            </div>
+            {infoItems.map((item) => (
+              <InfoItem
+                key={item.label}
+                {...item}
+              />
+            ))}
             {contextHolder}
             {modalContext}
           </Space>

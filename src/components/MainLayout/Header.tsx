@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { mapApi } from "../../api";
 import SwitchMode from "../booking/SwitchMode";
+import useLocalStorage from "../../hooks/useLocalStorage";
 const { Header: AntdHeader } = Layout;
 const getTitle = (pathname: string) => {
   if (pathname.startsWith("/bookings")) {
@@ -29,10 +30,10 @@ const getTitle = (pathname: string) => {
 const Header: FC = () => {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const [apiKey, setapiKey] = useState<string>();
+  const [apiKey, setapiKey] = useLocalStorage("apiKey", "");
   useEffect(() => {
     void mapApi.getApiKey().then((res) => setapiKey(res));
-  }, []);
+  }, [setapiKey]);
   const handleUpdateApiKey = () => {
     if (!apiKey) return;
     void mapApi.updateApiKey(apiKey);
@@ -58,7 +59,9 @@ const Header: FC = () => {
         <Form.Item label="Google Map API Key">
           <Input.Password
             value={apiKey}
-            onChange={(e) => setapiKey(e.target.value)}
+            onChange={(e) => {
+              setapiKey(e.target.value);
+            }}
           />
         </Form.Item>
         <SwitchMode />

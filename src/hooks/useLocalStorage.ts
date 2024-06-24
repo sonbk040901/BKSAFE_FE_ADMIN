@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const useLocalStorage = <T = unknown>(key: string, defaultValue: T) => {
   // Create state variable to store
@@ -21,22 +21,24 @@ const useLocalStorage = <T = unknown>(key: string, defaultValue: T) => {
     }
   });
 
-  // this method update our localStorage and our state
-  const setLocalStorageStateValue: React.Dispatch<React.SetStateAction<T>> = (
-    valueOrFn,
-  ) => {
-    let newValue: T;
-    if (typeof valueOrFn === "function") {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      newValue = valueOrFn(localStorageValue);
-    } else {
-      newValue = valueOrFn;
-    }
-    localStorage.setItem(key, JSON.stringify(newValue));
-    setLocalStorageValue(newValue);
-  };
+  const setLocalStorageStateValue: React.Dispatch<React.SetStateAction<T>> =
+    useCallback(
+      (valueOrFn) => {
+        let newValue: T;
+        if (valueOrFn instanceof Function) {
+          setLocalStorageValue((prevValue) => {
+            newValue = valueOrFn(prevValue);
+            localStorage.setItem(key, JSON.stringify(newValue));
+            return newValue;
+          });
+        } else {
+          newValue = valueOrFn;
+          localStorage.setItem(key, JSON.stringify(newValue));
+          setLocalStorageValue(newValue);
+        }
+      },
+      [key],
+    );
   return [localStorageValue, setLocalStorageStateValue] as const;
 };
 

@@ -1,10 +1,34 @@
-import { Modal, ModalProps } from "antd";
-import type { FC } from "react";
-import { Booking } from "../../api/types";
+import { StarFilled } from "@ant-design/icons";
+import {
+  DirectionsRenderer,
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import { Modal, ModalProps, Space } from "antd";
+import { useEffect, useRef, useState, type FC } from "react";
+import { Booking, Location } from "../../api/types";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import { getTagStatus } from "../../utils";
+import timeDiff from "../../utils/timeDiff";
+import AccInfoCard from "./AccInfoCard";
+import BookingInfoCard from "./BookingInfoCard";
+import { InfoItemProps } from "./InfoItem";
+import { subcribe } from "../../socket";
 
 interface BookingDetailModalProps extends ModalProps {
   booking?: Booking;
 }
+
+const renderTime = (value?: string) => {
+  if (!value) return "Chưa có";
+  const [diff, dateStr] = timeDiff(value);
+  return (
+    <div>
+      {dateStr} ({diff})
+    </div>
+  );
+};
 
 const BookingDetailModal: FC<BookingDetailModalProps> = ({
   booking,
@@ -12,27 +36,231 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
 }) => {
   const {
     id,
-    // locations,
-    // startTime,
-    // endTime,
-    // user,
-    // status,
-    // rating,
-    // nextLocationId,
+    locations,
+    startTime,
+    endTime,
+    user,
+    status,
+    rating,
+    nextLocationId,
     // notes,
-    // note,
-    // price,
-    // driver,
+    note,
+    price,
+    driver,
     // updatedAt,
-    // createdAt,
+    createdAt,
+    review,
   } = booking || {};
+  const [apiKey] = useLocalStorage("apiKey", "");
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: apiKey,
+    language: "vi",
+    region: "VN",
+    version: "3",
+  });
+  const mapRef = useRef<GoogleMap>(null);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult>();
+  const [driverLocation, setDriverLocation] = useState(driver?.location);
+  const userItems: InfoItemProps[] = [
+    {
+      label: "Tên người đặt",
+      value: user?.fullName,
+    },
+    {
+      label: "Số điện thoại",
+      value: user?.phone,
+    },
+    {
+      label: "Email",
+      value: user?.email,
+    },
+  ];
+  const driverItems: InfoItemProps[] = [
+    {
+      label: "Tên tài xế",
+      value: driver?.fullName,
+    },
+    {
+      label: "Số điện thoại",
+      value: driver?.phone,
+    },
+    {
+      label: "Email",
+      value: driver?.email,
+    },
+    {
+      label: "Đánh giá",
+      value: (
+        <Space>
+          <span>{driver && +driver.rating.toFixed(2)}</span>
+          <StarFilled className="text-yellow-400" />
+        </Space>
+      ),
+    },
+  ];
+  const bookingItems: InfoItemProps[] = [
+    { label: "Điểm bắt đầu", value: locations?.[0]?.address },
+    {
+      label: "Điểm đến tiếp theo",
+      value: locations?.find((l) => l.id === nextLocationId)?.address,
+    },
+    {
+      label: "Điểm kết thúc",
+      value: locations?.[locations.length - 1]?.address,
+    },
+    {
+      label: "Giá",
+      value: price?.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }),
+    },
+    { label: "Ghi chú", value: note || "Không có" },
+    {
+      label: "Thời gian đặt",
+      value: createdAt,
+      render: renderTime,
+    },
+    {
+      label: "Thời gian bắt đầu",
+      value: startTime,
+      render: renderTime,
+    },
+    {
+      label: "Thời gian kết thúc",
+      value: endTime,
+      render: renderTime,
+    },
+    {
+      label: "Trạng thái",
+      value: status && getTagStatus(status),
+    },
+    {
+      label: "Đánh giá",
+      value: rating ? (
+        <>
+          <span className="space-x-1">
+            <span>{+rating.toFixed(2)}</span>
+            <StarFilled className="text-yellow-400" />
+          </span>{" "}
+          ({review})
+        </>
+      ) : (
+        "Chưa có"
+      ),
+    },
+  ];
+  useEffect(() => {
+    if (!locations) return;
+    const directionService = new google.maps.DirectionsService();
+    void directionService.route(
+      {
+        origin: { lat: locations[0].latitude, lng: locations[0].longitude },
+        destination: {
+          lat: locations[locations.length - 1].latitude,
+          lng: locations[locations.length - 1].longitude,
+        },
+        travelMode: google.maps.TravelMode.DRIVING,
+        waypoints: locations.slice(1, -1).map((location) => ({
+          location: { lat: location.latitude, lng: location.longitude },
+        })),
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          setDirections(result ?? undefined);
+        }
+      },
+    );
+  }, [locations]);
+  useEffect(() => {
+    if (!booking || booking.status !== "DRIVING") return;
+    return subcribe("booking/current-driver-location", setDriverLocation);
+  }, [booking]);
   return (
     <Modal
       {...props}
       title={`Thông tin chi tiết yêu cầu đặt xe #${id || ""}`}
       footer={null}
       open={!!booking}
-    ></Modal>
+      width={1300}
+    >
+      <Space
+        direction="vertical"
+        className="w-full"
+      >
+        <div className="flex gap-2 flex-[2]">
+          <AccInfoCard
+            title="Thông tin người đặt"
+            items={userItems}
+            avatar={user?.avatar ?? undefined}
+          />
+          {driver ? (
+            <AccInfoCard
+              title="Thông tin tài xế"
+              items={driverItems}
+              avatar={driver?.avatar ?? undefined}
+            />
+          ) : (
+            <div className="flex-1"></div>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <BookingInfoCard
+            className="flex-1"
+            items={bookingItems}
+          />
+          {isLoaded && (
+            <GoogleMap
+              ref={mapRef}
+              mapContainerStyle={{ flex: 1, borderRadius: "0.5rem" }}
+              zoom={10}
+              center={{
+                lat: 21.007326,
+                lng: 105.847328,
+              }}
+              options={{
+                scaleControl: false,
+                streetViewControl: false,
+                zoomControl: false,
+                fullscreenControl: false,
+                mapTypeControl: false,
+              }}
+            >
+              {locations?.map((location, index, arr) => (
+                <Marker
+                  key={location.id}
+                  position={{
+                    lat: location.latitude,
+                    lng: location.longitude,
+                  }}
+                  title={
+                    index === 0
+                      ? "Điểm bắt đầu"
+                      : index === arr.length - 1
+                      ? "Điểm kết thúc"
+                      : "Điểm dừng"
+                  }
+                />
+              ))}
+              {driverLocation && (
+                <Marker
+                  position={{
+                    lat: driverLocation.latitude,
+                    lng: driverLocation.longitude,
+                  }}
+                  title="Vị trí tài xế"
+                />
+              )}
+              <DirectionsRenderer
+                directions={directions}
+                options={{ polylineOptions: { strokeColor: "hotpink" } }}
+              />
+            </GoogleMap>
+          )}
+        </div>
+      </Space>
+    </Modal>
   );
 };
 

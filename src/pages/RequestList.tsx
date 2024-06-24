@@ -14,6 +14,7 @@ import StatisticBar, {
   StatisticBarRef,
 } from "../components/booking/StatisticBar";
 import timeDiff from "../utils/timeDiff";
+import { getTagStatus } from "../utils";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
   skip: 0,
@@ -21,28 +22,6 @@ const initialData: PagingAndSortResponse<Booking> = {
   total: 0,
   order: "asc",
   sort: "id",
-};
-const getTagStatus = (status: Booking["status"]) => {
-  switch (status) {
-    case "PENDING":
-      return <Tag color="warning">Đang chờ</Tag>;
-    case "ACCEPTED":
-      return <Tag color="blue">Đang tìm tài xế</Tag>;
-    case "RECEIVED":
-      return <Tag color="cyan">Đang đến</Tag>;
-    case "REJECTED":
-      return <Tag color="volcano">Đã từ chối</Tag>;
-    case "CANCELLED":
-      return <Tag color="red">Đã hủy</Tag>;
-    case "DRIVING":
-      return <Tag color="purple">Đang thực hiện</Tag>;
-    case "COMPLETED":
-      return <Tag color="green">Kết thúc</Tag>;
-    case "TIMEOUT":
-      return <Tag color="magenta">Hết thời gian</Tag>;
-    default:
-      break;
-  }
 };
 const RequestList = () => {
   const [bookingId, setBookingId] = useState<number>();
@@ -187,7 +166,7 @@ const RequestList = () => {
                 onClick={() => setBooking(record)}
               />
             </Tooltip>
-            {(record.status === "PENDING" || record.status === "ACCEPTED" )&& (
+            {(record.status === "PENDING" || record.status === "ACCEPTED") && (
               <Tooltip
                 color="white"
                 title={<p className="text-slate-950">Xử lý</p>}

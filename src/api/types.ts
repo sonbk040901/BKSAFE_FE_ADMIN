@@ -36,7 +36,6 @@ export interface Account {
   id: number;
   createdAt: string;
   updatedAt: string;
-  username: string;
   email: string;
   phone: string;
   fullName: string;
@@ -124,4 +123,5 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   status: BookingStatus;
+  review: string;
 }

@@ -43,13 +43,13 @@ const SuggestDriverItem: FC<SuggestDriverItemProps> = (props) => {
           >
             <div className="flex gap-2">
               <Typography className="font-semibold">
-                {driver.username}
+                {driver.fullName}
               </Typography>
               <span className="text-yellow-500">
                 {driver.rating} <StarFilled />
               </span>
             </div>
-            <Typography.Link>{driver.fullName}</Typography.Link>
+            <Typography.Link>{driver.email}</Typography.Link>
           </Space>
           <p className="self-end flex gap-1">
             <AimOutlined className="text-pink-400" />
