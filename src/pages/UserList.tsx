@@ -195,7 +195,7 @@ const UserList = () => {
         dataSource={data.data}
         loading={isFetching}
         scroll={{ scrollToFirstRowOnChange: false, y: 450, x: 1000 }}
-        onChange={(pagination, filters) => {
+        onChange={(pagination) => {
           setQuery({
             ...query,
             skip:

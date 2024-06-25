@@ -18,7 +18,7 @@ const Register = () => {
         }
       />
       <div className="flex flex-col gap-5 pb-10">
-        <Input type="email" />
+        <Input type="phone" />
         <Input type="password" />
         <Checkbox
           checked={rememberMe}

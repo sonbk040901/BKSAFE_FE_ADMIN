@@ -11,7 +11,7 @@ interface UserInfoModalProps extends ModalProps {
 }
 
 const UserInfoModal: FC<UserInfoModalProps> = ({ user, ...props }) => {
-  const { email, fullName, phone, username, avatar, gender } = user || {};
+  const { email, fullName, phone, avatar, gender } = user || {};
   const renderGender = (gender: User["gender"]) => {
     return (
       <span className="w-7 aspect-square border-slate-500 border-[1px] border-solid bg-slate-100 rounded-full grid place-items-center">
@@ -51,7 +51,7 @@ const UserInfoModal: FC<UserInfoModalProps> = ({ user, ...props }) => {
           </Button>
         </Space>
       }
-      title={`Thông tin người dùng ${username || ""}`}
+      title={`Thông tin người dùng ${fullName || ""}`}
     >
       <Space
         direction="horizontal"
@@ -83,7 +83,7 @@ const UserInfoModal: FC<UserInfoModalProps> = ({ user, ...props }) => {
         >
           <Info
             title="Username"
-            value={username || ""}
+            value={fullName || ""}
           />
           <Info
             title="Họ tên"

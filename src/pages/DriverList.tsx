@@ -10,11 +10,10 @@ import {
   Driver,
   DriverStatus,
   PagingAndSortResponse,
-  RegisterStatus,
 } from "../api/types";
 import StatisticBar from "../components/driver/StatisticBar";
-import timeDiff from "../utils/timeDiff";
 import DriverDetailModal from "../components/pedingDriver/DriverDetailModal";
+import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
   skip: 0,
@@ -61,7 +60,7 @@ const DriverList = () => {
           <Avatar
             shape="square"
             icon={<UserOutlined />}
-            src={"https://i.pravatar.cc/300"}
+            src={avatar ?? "https://i.pravatar.cc/300"}
             size={60}
             alt="avatar"
           />

@@ -8,7 +8,9 @@ interface StatisticBarProps {
   onSelect?: (isActivated: boolean | undefined) => void;
 }
 
-const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
+const StatisticBar: FC<StatisticBarProps> = () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const [hasNoti, setHasNoti] = useState(false);
   const {
     data: statistic,
@@ -101,7 +103,9 @@ const StatisticBar: FC<StatisticBarProps> = ({ onSelect }) => {
           <span>
             <Tag
               color="error"
-              children={<Typography.Text type="danger">Đã chặn</Typography.Text>}
+              children={
+                <Typography.Text type="danger">Đã chặn</Typography.Text>
+              }
             />
           </span>
           <div className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1">
