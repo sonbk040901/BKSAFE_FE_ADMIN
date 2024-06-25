@@ -1,16 +1,10 @@
 import {
   ArrowLeftOutlined,
-  CalendarOutlined,
   CheckOutlined,
-  CloseCircleOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  UserOutlined,
+  CloseCircleOutlined
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Avatar,
-  Badge,
   Button,
   Card,
   Image,
@@ -18,45 +12,19 @@ import {
   Space,
   Tabs,
   TabsProps,
-  message,
+  message
 } from "antd";
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { driverApi } from "../api";
-import { Driver, RegisterStatus } from "../api/types";
+import { RegisterStatus } from "../api/types";
+import InfoItem, { InfoItemProps } from "../components/booking/InfoItem";
 import CccdTab from "../components/pedingDriver/CccdTab";
 import LicenseTab from "../components/pedingDriver/LicenseTab";
-import { FemaleIcon, MaleIcon, OtherGenderIcon } from "../icons";
-import IconGenderMaleFemale from "../icons/IconGenderMaleFemale";
-import IconLocationPoint from "../icons/IconLocationPoint";
-import InfoItem, { InfoItemProps } from "../components/booking/InfoItem";
-const renderGender = (gender: Driver["gender"]) => {
-  return (
-    <span className="w-7 aspect-square border-slate-200 border-[1px] border-solid bg-slate-100 rounded-full grid place-items-center">
-      {gender === "MALE" ? (
-        <MaleIcon
-          color="#007bff"
-          size={17}
-        />
-      ) : gender === "FEMALE" ? (
-        <FemaleIcon
-          color="hotpink"
-          size={17}
-        />
-      ) : (
-        <OtherGenderIcon
-          color="hotpink"
-          size={17}
-        />
-      )}
-    </span>
-  );
-};
+
 
 const DriverDetail = () => {
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr || "");
-  const [preview, setPreview] = useState(false);
   const { data, status, refetch } = useQuery({
     queryFn: () => driverApi.getDetail(id),
     queryKey: ["get-driver", id],

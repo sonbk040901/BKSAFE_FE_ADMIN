@@ -2,20 +2,23 @@ import { StarFilled } from "@ant-design/icons";
 import {
   DirectionsRenderer,
   GoogleMap,
-  Marker,
   useJsApiLoader,
+  MarkerF,
 } from "@react-google-maps/api";
 import { Modal, ModalProps, Space } from "antd";
 import { useEffect, useRef, useState, type FC } from "react";
-import { Booking, Location } from "../../api/types";
+import { Booking } from "../../api/types";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { subcribe } from "../../socket";
 import { getTagStatus } from "../../utils";
 import timeDiff from "../../utils/timeDiff";
 import AccInfoCard from "./AccInfoCard";
 import BookingInfoCard from "./BookingInfoCard";
 import { InfoItemProps } from "./InfoItem";
-import { subcribe } from "../../socket";
-
+import driverPin from "../../assets/images/driver-pin.png";
+import userPin from "../../assets/images/user-pin.png";
+import homePin from "../../assets/images/home-pin.png";
+import dropOffPin from "../../assets/images/drop-off-pin.png";
 interface BookingDetailModalProps extends ModalProps {
   booking?: Booking;
 }
@@ -165,6 +168,8 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
         waypoints: locations.slice(1, -1).map((location) => ({
           location: { lat: location.latitude, lng: location.longitude },
         })),
+        language: "vi",
+        region: "VN",
       },
       (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
@@ -227,34 +232,48 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
                 mapTypeControl: false,
               }}
             >
-              {locations?.map((location, index, arr) => (
-                <Marker
-                  key={location.id}
-                  position={{
-                    lat: location.latitude,
-                    lng: location.longitude,
-                  }}
-                  title={
+              {locations &&
+                locations.map((lovation, index, arr) => {
+                  const iconUrl =
                     index === 0
-                      ? "Điểm bắt đầu"
+                      ? userPin
                       : index === arr.length - 1
-                      ? "Điểm kết thúc"
-                      : "Điểm dừng"
-                  }
-                />
-              ))}
+                      ? homePin
+                      : dropOffPin;
+                  return (
+                    <MarkerF
+                      key={lovation.id}
+                      position={{
+                        lat: lovation.latitude,
+                        lng: lovation.longitude,
+                      }}
+                      title={lovation.address}
+                      icon={{
+                        url: iconUrl,
+                        scaledSize: new google.maps.Size(30, 30),
+                      }}
+                    />
+                  );
+                })}
               {driverLocation && (
-                <Marker
+                <MarkerF
                   position={{
                     lat: driverLocation.latitude,
                     lng: driverLocation.longitude,
                   }}
                   title="Vị trí tài xế"
+                  icon={{
+                    url: driverPin,
+                    scaledSize: new google.maps.Size(30, 30),
+                  }}
                 />
               )}
               <DirectionsRenderer
                 directions={directions}
-                options={{ polylineOptions: { strokeColor: "hotpink" } }}
+                options={{
+                  polylineOptions: { strokeColor: "hotpink" },
+                  suppressMarkers: true,
+                }}
               />
             </GoogleMap>
           )}

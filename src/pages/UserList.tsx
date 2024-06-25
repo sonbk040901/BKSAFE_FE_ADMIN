@@ -2,7 +2,6 @@ import { EyeOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Avatar,
-  Badge,
   Button,
   Image,
   Space,
@@ -16,8 +15,9 @@ import { useState } from "react";
 import { userApi } from "../api";
 import { ActivateStatus, PagingAndSortResponse, User } from "../api/types";
 import { GetAllPagingAndSortDto } from "../api/user";
-import timeDiff from "../utils/timeDiff";
 import StatisticBar from "../components/user/StatisticBar";
+import UserDetailModal from "../components/user/UserDetailModal";
+import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<User> = {
   data: [],
   skip: 0,
@@ -30,8 +30,9 @@ const initialData: PagingAndSortResponse<User> = {
 const UserList = () => {
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
   const [user, setUser] = useState<User>();
+  const [open, setOpen] = useState(false);
   const [previewSrc, setPreviewSrc] = useState<string>();
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryFn: () => userApi.getAll(query),
     initialData,
     queryKey: ["users", query],
@@ -151,7 +152,10 @@ const UserList = () => {
               size="small"
               icon={<EyeOutlined />}
               type="text"
-              onClick={() => setUser(record)}
+              onClick={() => {
+                setUser(record);
+                setOpen(true);
+              }}
             />
           </Tooltip>
         </Space>
@@ -212,6 +216,15 @@ const UserList = () => {
           ),
         }}
       />
+      {user && (
+        <UserDetailModal
+          driverId={user.id}
+          open={open}
+          onRequestClose={() => setOpen(false)}
+          onChange={() => void refetch()}
+          hasStatistic
+        />
+      )}
     </Space>
   );
 };

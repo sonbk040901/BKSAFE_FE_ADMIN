@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { driverApi } from "../api";
 import { GetDriversPagingAndSortDto } from "../api/driver";
 import {
+  ActivateStatus,
   Driver,
   DriverStatus,
   PagingAndSortResponse,
@@ -13,6 +14,7 @@ import {
 } from "../api/types";
 import StatisticBar from "../components/driver/StatisticBar";
 import timeDiff from "../utils/timeDiff";
+import DriverDetailModal from "../components/pedingDriver/DriverDetailModal";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
   skip: 0,
@@ -23,9 +25,10 @@ const initialData: PagingAndSortResponse<Driver> = {
 };
 
 const DriverList = () => {
-  const [, setDriver] = useState<Driver>();
+  const [driver, setDriver] = useState<Driver>();
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState<GetDriversPagingAndSortDto>(initialData);
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryFn: () => driverApi.getAll(query),
     initialData,
     queryKey: ["get-drivers", query.order, query.sort, query.skip, query.take],
@@ -131,21 +134,21 @@ const DriverList = () => {
       },
       {
         title: "Trạng thái",
-        key: "registerStatus",
-        dataIndex: "registerStatus",
+        key: "activateStatus",
+        dataIndex: "activateStatus",
         width: 200,
-        render: (status: RegisterStatus) => {
+        render: (status: ActivateStatus) => {
           return (
             <Typography.Text
               type={
-                status === "PENDING"
+                status === "BLOCKED"
                   ? "warning"
-                  : status === "ACCEPTED"
+                  : status === "ACTIVATED"
                   ? "success"
                   : "danger"
               }
             >
-              {status === "ACCEPTED" ? (
+              {status === "ACTIVATED" ? (
                 <Tag color="success">Đã kích hoạt</Tag>
               ) : (
                 <Tag color="error">Đã chặn</Tag>
@@ -168,7 +171,10 @@ const DriverList = () => {
                 size="small"
                 icon={<EyeOutlined />}
                 type="text"
-                onClick={() => setDriver(record)}
+                onClick={() => {
+                  setDriver(record);
+                  setOpen(true);
+                }}
               />
             </Tooltip>
           </Space>
@@ -221,6 +227,15 @@ const DriverList = () => {
           ),
         }}
       />
+      {driver && (
+        <DriverDetailModal
+          driverId={driver.id}
+          open={open}
+          onRequestClose={() => setOpen(false)}
+          onChange={() => void refetch()}
+          hasStatistic
+        />
+      )}
     </Space>
   );
 };

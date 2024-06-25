@@ -1,6 +1,6 @@
 import { EyeOutlined, SettingFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Space, Table, Tag, Tooltip } from "antd";
+import { Button, Space, Table, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
 import { useMemo, useRef, useState } from "react";
@@ -13,8 +13,8 @@ import SelectDriverDrawer from "../components/booking/SelectDriverDrawer";
 import StatisticBar, {
   StatisticBarRef,
 } from "../components/booking/StatisticBar";
-import timeDiff from "../utils/timeDiff";
 import { getTagStatus } from "../utils";
+import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Booking> = {
   data: [],
   skip: 0,
@@ -117,8 +117,8 @@ const RequestList = () => {
       {
         title: "Người đặt",
         key: "account",
-        dataIndex: ["user", "email"],
-        render: (email: string, record) => (
+        dataIndex: ["user", "fullName"],
+        render: (fullName: string, record) => (
           <Tooltip
             color="white"
             title={
@@ -128,7 +128,7 @@ const RequestList = () => {
             }
           >
             <Link onClick={() => setUser(record.user ?? undefined)}>
-              {email}
+              {fullName}
             </Link>
           </Tooltip>
         ),

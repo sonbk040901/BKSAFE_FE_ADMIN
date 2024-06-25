@@ -2,6 +2,7 @@ import buildUrl from "../utils/searchParam";
 import instance from "./axios";
 import {
   ActivateStatus,
+  Booking,
   Driver,
   DriverStatus,
   PagingAndSortDto,
@@ -54,5 +55,26 @@ export const actionRegister = async (id: number, status: RegisterStatus) => {
   const res = await instance.patch<Driver>(path, {
     status,
   });
+  return res.data;
+};
+export const actionActivate = async (id: number, status: ActivateStatus) => {
+  const path = `drivers/${id}/action`;
+  const res = await instance.patch<Driver>(path, {
+    status,
+  });
+  return res.data;
+};
+export const getStatisticById = async (driverId: number, month: string) => {
+  const path = `drivers/${driverId}/statistic`;
+  const res = await instance.get<{
+    totalPrice: number;
+    totalBooking: number;
+    totalReject: number;
+  }>(path, { params: { month } });
+  return res.data;
+};
+export const getBookings = async (driverId: number, month: string) => {
+  const path = `drivers/${driverId}/bookings`;
+  const res = await instance.get<Booking[]>(path, { params: { month } });
   return res.data;
 };

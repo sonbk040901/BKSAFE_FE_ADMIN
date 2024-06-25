@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar, Button, Space, Tag, Tooltip, Typography } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { driverApi } from "../api";
 import { GetDriversPagingAndSortDto } from "../api/driver";
 import { Driver, PagingAndSortResponse, RegisterStatus } from "../api/types";
+import DriverDetailModal from "../components/pedingDriver/DriverDetailModal";
 import timeDiff from "../utils/timeDiff";
 const initialData: PagingAndSortResponse<Driver> = {
   data: [],
@@ -31,7 +31,8 @@ const PendingDriverList = () => {
     ],
     refetchOnWindowFocus: false,
   });
-  const navigate = useNavigate();
+  const [driverId, setDriverId] = useState<number>();
+  const [open, setOpen] = useState(false);
   const columns: ColumnsType<Driver> = useMemo(
     () => [
       {
@@ -137,14 +138,17 @@ const PendingDriverList = () => {
                 size="small"
                 icon={<EyeOutlined />}
                 type="text"
-                onClick={() => navigate(`${record.id}`)}
+                onClick={() => {
+                  setDriverId(record.id);
+                  setOpen(true);
+                }}
               />
             </Tooltip>
           </Space>
         ),
       },
     ],
-    [navigate],
+    [],
   );
   return (
     <Space
@@ -190,6 +194,14 @@ const PendingDriverList = () => {
           ),
         }}
       />
+
+      {driverId && (
+        <DriverDetailModal
+          driverId={driverId}
+          open={open}
+          onRequestClose={() => setOpen(false)}
+        />
+      )}
     </Space>
   );
 };

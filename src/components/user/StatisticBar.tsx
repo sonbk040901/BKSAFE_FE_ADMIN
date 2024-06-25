@@ -1,6 +1,6 @@
 import { RedoOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Space, Tag, Typography } from "antd";
+import { Space, Tag, Typography } from "antd";
 import { useState, type FC } from "react";
 import { userApi } from "../../api";
 
