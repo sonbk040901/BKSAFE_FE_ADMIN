@@ -7,7 +7,7 @@ import {
 } from "@react-google-maps/api";
 import { Modal, ModalProps, Space } from "antd";
 import { useEffect, useRef, useState, type FC } from "react";
-import { Booking } from "../../api/types";
+import { Booking, Location } from "../../api/types";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { subcribe } from "../../socket";
 import { getTagStatus } from "../../utils";
@@ -180,8 +180,14 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
   }, [locations]);
   useEffect(() => {
     if (!booking || booking.status !== "DRIVING") return;
-    return subcribe("booking/current-driver-location", setDriverLocation);
-  }, [booking]);
+    return subcribe(
+      "booking/current-driver-location",
+      (location: Location & { driverId: number }) => {
+        if (location.driverId !== driver?.id) return;
+        setDriverLocation(location);
+      },
+    );
+  }, [booking, driver?.id]);
   return (
     <Modal
       {...props}
