@@ -1,10 +1,17 @@
 import { Socket, io } from "socket.io-client";
 import { getData } from "../utils/storage";
-const { VITE_BACKEND_URL, VITE_BACKEND_PORT } = import.meta.env;
-// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-export const ENDPOINT = `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}`;
+const { VITE_BACKEND_URL, VITE_BACKEND_PORT } = import.meta.env as Record<
+  string,
+  string
+>;
+
+export const ENDPOINT = VITE_BACKEND_PORT
+  ? `${VITE_BACKEND_URL}:${VITE_BACKEND_PORT}`
+  : VITE_BACKEND_URL;
 export const connect = (path = "") => {
   const token = getData<string>("token");
+  console.log("Connect to socket", `${ENDPOINT}/${path}`);
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const socket = io(`${ENDPOINT}/${path}`, {
     extraHeaders: {
       authorization: token,
