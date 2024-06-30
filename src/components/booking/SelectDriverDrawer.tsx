@@ -2,13 +2,16 @@ import {
   CloseCircleOutlined,
   ReloadOutlined,
   StopOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Carousel, Drawer, Modal, message } from "antd";
-import { type ComponentProps, type FC } from "react";
+import { useRef, type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
 import { PagingAndSortResponse, SuggestDriver } from "../../api/types";
 import SuggestDriverItem from "./SuggestDriver";
+import { CarouselRef } from "antd/es/carousel";
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
     yield arr.slice(i, i + n);
@@ -34,6 +37,7 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
   const { bookingId, onClose, onReject } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
+  const carouselRef = useRef<CarouselRef>(null);
   const { data: dto, refetch } = useQuery({
     queryFn: async () => {
       if (bookingId) return bookingApi.getSuggestDrivers(bookingId);
@@ -135,26 +139,45 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
       {contextHolder}
       {modalContext}
       <div className="flex flex-col h-full gap-2">
-        <Carousel
-          arrows
-          draggable
-          className="cursor-grab"
-        >
-          {[...chunks(data, 5)].map((data) => (
-            <div
-              key={null}
-              className="space-y-3 pr-3"
-            >
-              {data.map((driver) => (
-                <SuggestDriverItem
-                  key={driver.id}
-                  driver={driver}
-                  onSelect={handleSelect}
-                />
-              ))}
-            </div>
-          ))}
-        </Carousel>
+        <div className="relative flex-1">
+          <Carousel
+            infinite={false}
+            ref={carouselRef}
+            draggable
+          >
+            {[...chunks(data, 5)].map((data) => (
+              <div
+                key={null}
+                className="space-y-3 pr-3"
+              >
+                {data.map((driver) => (
+                  <SuggestDriverItem
+                    key={driver.id}
+                    driver={driver}
+                    onSelect={handleSelect}
+                  />
+                ))}
+              </div>
+            ))}
+          </Carousel>
+          <Button
+            icon={<LeftOutlined />}
+            onClick={() => {
+              carouselRef.current?.prev();
+            }}
+            className="absolute top-1/2 -left-5 transform -translate-y-1/2"
+            shape="circle"
+          ></Button>
+
+          <Button
+            icon={<RightOutlined />}
+            onClick={() => {
+              carouselRef.current?.next();
+            }}
+            className="absolute top-1/2 -right-2 transform -translate-y-1/2"
+            shape="circle"
+          ></Button>
+        </div>
         <div className="text-end space-x-2 pb-2">
           {data.length === 0 ? (
             <Button

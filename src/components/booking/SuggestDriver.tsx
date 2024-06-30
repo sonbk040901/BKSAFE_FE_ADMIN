@@ -46,7 +46,7 @@ const SuggestDriverItem: FC<SuggestDriverItemProps> = (props) => {
                 {driver.fullName}
               </Typography>
               <span className="text-yellow-500">
-                {driver.rating} <StarFilled />
+                {+driver.rating.toFixed(2)} <StarFilled />
               </span>
             </div>
             <Typography.Link>{driver.email}</Typography.Link>

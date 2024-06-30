@@ -13,7 +13,7 @@ const initialData: PagingAndSortResponse<Driver> = {
   skip: 0,
   take: 10,
   total: 0,
-  order: "asc",
+  order: "desc",
   sort: "id",
 };
 

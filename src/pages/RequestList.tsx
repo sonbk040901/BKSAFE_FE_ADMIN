@@ -20,7 +20,7 @@ const initialData: PagingAndSortResponse<Booking> = {
   skip: 0,
   take: 10,
   total: 0,
-  order: "asc",
+  order: "desc",
   sort: "id",
 };
 const RequestList = () => {
@@ -111,6 +111,7 @@ const RequestList = () => {
           { text: "Đã hủy", value: "CANCELLED" },
           { text: "Đang thực hiện", value: "DRIVING" },
           { text: "Kết thúc", value: "COMPLETED" },
+          { text: "Hết thời gian", value: "TIMEOUT" },
         ],
         filteredValue: query.status || null,
       },

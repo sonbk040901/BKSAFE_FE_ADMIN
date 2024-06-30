@@ -86,7 +86,7 @@ const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
       onSelect?.(status);
     };
     return (
-      <div className="relative w-[450px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-4 gap-3 shadow-sm">
+      <div className="relative w-[570px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-5 gap-3 shadow-sm">
         {contextHolder}
         <span className="absolute bottom-1 right-1 cursor-pointer">
           <RedoOutlined
@@ -94,15 +94,15 @@ const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
             onClick={() => void refetchStatistic()}
           />
         </span>
-        <Space key={"total"}>
-          <div className="flex flex-col gap-2">
+        <Space className="row-span-2" key={"total"}>
+          <div className="flex flex-col gap-2 columns-2">
             <span>Tổng</span>
             <div
               className="space-x-1 cursor-pointer transition-transform duration-300 hover:scale-110 hover:translate-x-1"
               onClick={() => handleClickStatus()}
             >
               <CarOutlined />
-              <span className="font-semibold text-base">{total}</span>
+              <span className="font-semibold text-lg">{total}</span>
             </div>
           </div>
         </Space>
