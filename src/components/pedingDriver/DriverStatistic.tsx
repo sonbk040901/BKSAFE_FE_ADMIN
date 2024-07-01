@@ -1,10 +1,13 @@
-import { CarOutlined, StarFilled } from "@ant-design/icons";
+import { CarOutlined, InfoCircleOutlined, StarFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DatePicker, Table, Tooltip, Typography } from "antd";
+import { Card, DatePicker, Switch, Table, Tooltip, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
+import "chart.js/auto";
+import { ChartData } from "chart.js/auto";
 import dayjs, { Dayjs } from "dayjs";
 import { useState, type FC } from "react";
+import { Bar } from "react-chartjs-2";
 import { driverApi } from "../../api";
 import { Booking } from "../../api/types";
 import timeDiff from "../../utils/timeDiff";
@@ -18,6 +21,15 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
   const { data: statistic } = useQuery({
     queryFn: () => driverApi.getStatisticById(driverId, month.toString()),
     queryKey: ["get-driver-statistic", driverId, month.toString()],
+    refetchOnWindowFocus: false,
+  });
+  const { data: yearStatistic } = useQuery({
+    queryFn: () => driverApi.getYearStatistic(driverId, month.get("year")),
+    queryKey: [
+      "get-driver-year-statistic",
+      driverId,
+      month.get("year").toString(),
+    ],
     refetchOnWindowFocus: false,
   });
   const { data: bookings } = useQuery({
@@ -103,13 +115,18 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
         return rating === null ? (
           "Chưa có"
         ) : (
-          <div className="">
-            <span>{+rating.toFixed(2)}</span>{" "}
-            <StarFilled className="text-yellow-400" />
-            <span className="max-w-md overflow-hidden truncate">
-              {review ? <>({review})</> : null}
-            </span>
-          </div>
+          <Tooltip
+            color="white"
+            title={review && <p className="text-slate-950">{review}</p>}
+          >
+            <div className="flex items-center gap-1">
+              <span>{+rating.toFixed(2)}</span>
+              <StarFilled className="text-yellow-400" />
+              <span className="w-20 overflow-hidden truncate inline-block">
+                {review ? <>- {review}</> : null}
+              </span>
+            </div>
+          </Tooltip>
         );
       },
     },
@@ -130,9 +147,25 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
       },
     },
   ];
+
+  const DoughData: ChartData<"bar", number[], string> = {
+    labels: yearStatistic?.map((item) => `Tháng ${item.month}`) || [],
+    datasets: [
+      {
+        data: yearStatistic?.map((item) => item.price) || [],
+        backgroundColor: "#ff69b4aa",
+        hoverBackgroundColor: "hotpink",
+        label: "Thu nhập",
+      },
+    ],
+  };
   return (
     <div className="space-y-2">
-      <Card>
+      <Typography className="text-gray-500 font-semibold text-base mb-1">
+        Thống kê tài xế
+      </Typography>
+
+      <Card className="relative">
         <div className="flex gap-1">
           <div className="flex-1 flex flex-col gap-2">
             <Typography className="text-gray-500 font-semibold text-base">
@@ -151,24 +184,6 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
           </div>
           <div className="flex-1 flex flex-col gap-2">
             <Typography className="text-gray-500 font-semibold text-base">
-              Số chuyến
-            </Typography>
-            <div className="space-x-1 cursor-pointer transition-transform text-lg">
-              <CarOutlined />
-              <span className="font-semibold">{statistic?.totalBooking}</span>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <Typography className="text-gray-500 font-semibold text-base">
-              Số chuyến từ chối
-            </Typography>
-            <div className="space-x-1 cursor-pointer transition-transform text-lg">
-              <CarOutlined />
-              <span className="font-semibold">{statistic?.totalReject}</span>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <Typography className="text-gray-500 font-semibold text-base">
               Thu nhập
             </Typography>
             <div className="space-x-1 cursor-pointer transition-transform text-lg">
@@ -181,8 +196,54 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
               </span>
             </div>
           </div>
+          <div className="flex-1 flex flex-col gap-2">
+            <Typography className="text-gray-500 font-semibold text-base">
+              Số chuyến thành công
+            </Typography>
+            <div className="space-x-1 cursor-pointer transition-transform text-lg">
+              <CarOutlined />
+              <span className="font-semibold">{statistic?.totalBooking}</span>
+            </div>
+          </div>
+          {
+            <div className="flex-1 flex flex-col gap-2">
+              {statistic?.totalReject !== undefined ? (
+                <>
+                  <Typography className="text-gray-500 font-semibold text-base">
+                    Số chuyến từ chối
+                  </Typography>
+                  <div className="space-x-1 cursor-pointer transition-transform text-lg">
+                    <CarOutlined />
+                    <span className="font-semibold">
+                      {statistic?.totalReject}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+          }
+        </div>
+        <div className="absolute top-2 right-2">
+          <Tooltip
+            color="white"
+            title={
+              <p className="text-slate-950">
+                Chỉ xem được số chuyến từ chối của hiện tại
+              </p>
+            }
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
         </div>
       </Card>
+      <div className="h-60">
+        <Bar
+          data={DoughData}
+          width={500}
+        />
+      </div>
       <div>
         <Typography className="text-gray-500 font-semibold text-base mb-1">
           Danh sách chuyến đi

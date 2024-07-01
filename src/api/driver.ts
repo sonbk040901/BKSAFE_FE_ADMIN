@@ -26,6 +26,11 @@ export type DriverStatistic = {
   status: DriverStatusStatistic;
   activateStatus: ActivateStatusStatistic;
 };
+export type DriverYearStatistic = {
+  month: number;
+  price: number;
+  total: number;
+};
 export const getAll = async (getAllDto: Type<GetDriversPagingAndSortDto>) => {
   const path = "drivers";
   const url = buildUrl(path, getAllDto);
@@ -69,8 +74,15 @@ export const getStatisticById = async (driverId: number, month: string) => {
   const res = await instance.get<{
     totalPrice: number;
     totalBooking: number;
-    totalReject: number;
+    totalReject?: number;
   }>(path, { params: { month } });
+  return res.data;
+};
+export const getYearStatistic = async (driverId: number, year: number) => {
+  const path = `drivers/${driverId}/year-statistic`;
+  const res = await instance.get<DriverYearStatistic[]>(path, {
+    params: { year },
+  });
   return res.data;
 };
 export const getBookings = async (driverId: number, month: string) => {

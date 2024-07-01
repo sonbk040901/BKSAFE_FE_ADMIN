@@ -67,11 +67,6 @@ const DriverList = () => {
         ),
       },
       {
-        title: "Email",
-        key: "email",
-        dataIndex: "email",
-      },
-      {
         title: "Họ tên",
         key: "fullName",
         dataIndex: "fullName",
@@ -80,6 +75,11 @@ const DriverList = () => {
         title: "Điện thoại",
         key: "phone",
         dataIndex: "phone",
+      },
+      {
+        title: "Email",
+        key: "email",
+        dataIndex: "email",
       },
       {
         title: "Trạng thái nhận chuyến",
