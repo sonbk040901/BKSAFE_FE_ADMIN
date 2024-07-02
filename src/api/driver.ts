@@ -27,9 +27,14 @@ export type DriverStatistic = {
   activateStatus: ActivateStatusStatistic;
 };
 export type DriverYearStatistic = {
-  month: number;
+  value: number;
   price: number;
   total: number;
+};
+export type DriverBookingStatistic = {
+  statistic: DriverYearStatistic[];
+  bookings: Booking[];
+  reject: number;
 };
 export const getAll = async (getAllDto: Type<GetDriversPagingAndSortDto>) => {
   const path = "drivers";
@@ -69,8 +74,11 @@ export const actionActivate = async (id: number, status: ActivateStatus) => {
   });
   return res.data;
 };
-export const getStatisticById = async (driverId: number, month: string) => {
-  const path = `drivers/${driverId}/statistic`;
+export const getMonthStatisticById = async (
+  driverId: number,
+  month: string,
+) => {
+  const path = `drivers/${driverId}/month-statistic`;
   const res = await instance.get<{
     totalPrice: number;
     totalBooking: number;
@@ -78,10 +86,14 @@ export const getStatisticById = async (driverId: number, month: string) => {
   }>(path, { params: { month } });
   return res.data;
 };
-export const getYearStatistic = async (driverId: number, year: number) => {
-  const path = `drivers/${driverId}/year-statistic`;
-  const res = await instance.get<DriverYearStatistic[]>(path, {
-    params: { year },
+export const getBookingStatistic = async (
+  driverId: number,
+  date: Date,
+  type: "month" | "year" = "month",
+) => {
+  const path = `drivers/${driverId}/statistic`;
+  const res = await instance.get<DriverBookingStatistic>(path, {
+    params: { date, type },
   });
   return res.data;
 };

@@ -16,7 +16,7 @@ interface UserStatisticProps {
 const UserStatistic: FC<UserStatisticProps> = ({ userId }) => {
   const [month, setMonth] = useState<Dayjs>(dayjs());
   const { data: statistic } = useQuery({
-    queryFn: () => driverApi.getStatisticById(userId, month.toString()),
+    queryFn: () => driverApi.getMonthStatisticById(userId, month.toString()),
     queryKey: ["get-driver-statistic", userId, month.toString()],
     refetchOnWindowFocus: false,
   });

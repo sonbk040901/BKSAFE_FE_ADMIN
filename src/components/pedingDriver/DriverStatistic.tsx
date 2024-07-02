@@ -1,13 +1,13 @@
-import { CarOutlined, InfoCircleOutlined, StarFilled } from "@ant-design/icons";
+import { StarFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DatePicker, Switch, Table, Tooltip, Typography } from "antd";
+import { DatePicker, Segmented, Space, Table, Tooltip, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import Link from "antd/es/typography/Link";
 import "chart.js/auto";
 import { ChartData } from "chart.js/auto";
 import dayjs, { Dayjs } from "dayjs";
 import { useState, type FC } from "react";
-import { Bar } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 import { driverApi } from "../../api";
 import { Booking } from "../../api/types";
 import timeDiff from "../../utils/timeDiff";
@@ -17,27 +17,13 @@ interface DriverStatisticProps {
 }
 
 const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
-  const [month, setMonth] = useState<Dayjs>(dayjs());
-  const { data: statistic } = useQuery({
-    queryFn: () => driverApi.getStatisticById(driverId, month.toString()),
-    queryKey: ["get-driver-statistic", driverId, month.toString()],
+  const [date, setDate] = useState<Dayjs>(dayjs());
+  const [type, setType] = useState<"month" | "year">("month");
+  const { data: { statistic, bookings, reject } = {}, isLoading } = useQuery({
+    queryFn: () => driverApi.getBookingStatistic(driverId, date.toDate(), type),
+    queryKey: ["get-driver-booking-statistic", driverId, date.toString(), type],
     refetchOnWindowFocus: false,
   });
-  const { data: yearStatistic } = useQuery({
-    queryFn: () => driverApi.getYearStatistic(driverId, month.get("year")),
-    queryKey: [
-      "get-driver-year-statistic",
-      driverId,
-      month.get("year").toString(),
-    ],
-    refetchOnWindowFocus: false,
-  });
-  const { data: bookings } = useQuery({
-    queryFn: () => driverApi.getBookings(driverId, month.toString()),
-    queryKey: ["get-driver-bookings", driverId, month.toString()],
-    refetchOnWindowFocus: false,
-  });
-  const isCurrentMonth = dayjs().isSame(month, "month");
   const columns: ColumnsType<Booking> = [
     {
       title: "STT",
@@ -147,101 +133,96 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
       },
     },
   ];
-
-  const DoughData: ChartData<"bar", number[], string> = {
-    labels: yearStatistic?.map((item) => `Tháng ${item.month}`) || [],
+  const DoughData: ChartData<"bar" | "line", number[], string> = {
+    labels: statistic?.map((item) => item.value.toString()) || [],
     datasets: [
       {
-        data: yearStatistic?.map((item) => item.price) || [],
+        type: "bar",
+        data: statistic?.map((item) => item.price) || [],
         backgroundColor: "#ff69b4aa",
         hoverBackgroundColor: "hotpink",
         label: "Thu nhập",
+        yAxisID: "y",
+      },
+
+      {
+        type: "line",
+        data: statistic?.map((item) => item.total) || [],
+        backgroundColor: "#53c41ac7",
+        hoverBackgroundColor: "#52c41a",
+        label: "Số chuyến thành công",
+        yAxisID: "y1",
       },
     ],
   };
-  return (
-    <div className="space-y-2">
-      <Typography className="text-gray-500 font-semibold text-base mb-1">
-        Thống kê tài xế
-      </Typography>
 
-      <Card className="relative">
-        <div className="flex gap-1">
-          <div className="flex-1 flex flex-col gap-2">
-            <Typography className="text-gray-500 font-semibold text-base">
-              Tháng {isCurrentMonth ? "hiện tại" : month.format("MM/YYYY")}
-            </Typography>
-            <div>
-              <DatePicker
-                picker="month"
-                value={month}
-                format={"MM/YYYY"}
-                maxDate={dayjs()}
-                onChange={(date) => setMonth(date)}
-                allowClear={false}
-              />
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <Typography className="text-gray-500 font-semibold text-base">
-              Thu nhập
-            </Typography>
-            <div className="space-x-1 cursor-pointer transition-transform text-lg">
-              <CarOutlined />
-              <span className="font-semibold">
-                {statistic?.totalPrice.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </span>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <Typography className="text-gray-500 font-semibold text-base">
-              Số chuyến thành công
-            </Typography>
-            <div className="space-x-1 cursor-pointer transition-transform text-lg">
-              <CarOutlined />
-              <span className="font-semibold">{statistic?.totalBooking}</span>
-            </div>
-          </div>
-          {
-            <div className="flex-1 flex flex-col gap-2">
-              {statistic?.totalReject !== undefined ? (
-                <>
-                  <Typography className="text-gray-500 font-semibold text-base">
-                    Số chuyến từ chối
-                  </Typography>
-                  <div className="space-x-1 cursor-pointer transition-transform text-lg">
-                    <CarOutlined />
-                    <span className="font-semibold">
-                      {statistic?.totalReject}
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <></>
-              )}
-            </div>
-          }
+  return (
+    <div className="space-y-2 w-full h-[465px] overflow-y-auto">
+      <div className="flex justify-between w-full items-center">
+        <Space>
+          <Typography className="text-gray-500 font-semibold text-base mb-1">
+            Thống kê tài xế theo
+          </Typography>
+          <Segmented
+            options={["Tháng", "Năm"]}
+            onChange={(value) => {
+              setType(value === "Tháng" ? "month" : "year");
+            }}
+          />
+          <DatePicker
+            value={date}
+            onChange={setDate}
+            picker={type}
+            format={type === "month" ? "MM/YYYY" : "YYYY"}
+            maxDate={dayjs()}
+            allowClear={false}
+          />
+        </Space>
+        <div className="flex gap-2 pr-1 items-baseline">
+          <Typography className="text-gray-500 font-semibold text-base">
+            Số chuyến từ chối trong tháng này:
+          </Typography>
+          <span className="font-semibold text-lg text-red-500">{reject}</span>
         </div>
-        <div className="absolute top-2 right-2">
-          <Tooltip
-            color="white"
-            title={
-              <p className="text-slate-950">
-                Chỉ xem được số chuyến từ chối của hiện tại
-              </p>
-            }
-          >
-            <InfoCircleOutlined />
-          </Tooltip>
-        </div>
-      </Card>
-      <div className="h-60">
-        <Bar
+      </div>
+      <div className="h-60 relative">
+        <Chart
+          type="bar"
           data={DoughData}
-          width={500}
+          options={{
+            // responsive: true,
+            maintainAspectRatio: false,
+            onClick(_, elements) {
+              console.log(elements[0]?.index);
+            },
+            scales: {
+              y: {
+                type: "linear",
+                position: "left",
+                title: {
+                  display: true,
+                  text: "Thu nhập",
+                },
+                ticks: {
+                  callback: (value) => {
+                    return value.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    });
+                  },
+                },
+              },
+              y1: {
+                type: "linear",
+                position: "right",
+                title: {
+                  display: true,
+                  text: "Số chuyến",
+                },
+                grid: { drawOnChartArea: false },
+              },
+            },
+          }}
         />
       </div>
       <div>
@@ -249,6 +230,7 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
           Danh sách chuyến đi
         </Typography>
         <Table
+          loading={isLoading}
           scroll={{ scrollToFirstRowOnChange: false }}
           size="small"
           columns={columns}
