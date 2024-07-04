@@ -155,7 +155,6 @@ const DriverDetailModal: FC<DriverDetailModalProps> = (props) => {
                 >
                   Duyệt
                 </Button>
-
                 {data.registerStatus === "PENDING" && (
                   <Button
                     type="default"

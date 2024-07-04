@@ -45,13 +45,16 @@ const AddUpdateModal: FC<AddUpdateModalProps> = (props) => {
   }, [file]);
   const handleOk = async () => {
     setLoading(true);
-    const imgUrl = file ? await uploadImg(file) : notification.image;
-    const newNotification = { ...notification, image: imgUrl };
-    await (notification.id
-      ? handleUpdate(newNotification)
-      : handleCreate(newNotification));
-    setLoading(false);
-    props.onOk?.();
+    try {
+      const imgUrl = file ? await uploadImg(file) : notification.image;
+      const newNotification = { ...notification, image: imgUrl };
+      await (notification.id
+        ? handleUpdate(newNotification)
+        : handleCreate(newNotification));
+      props.onOk?.();
+    } finally {
+      setLoading(false);
+    }
   };
   const handleCreate = async (data: NotificationForm) => {
     await notificationApi.create(data);
@@ -66,9 +69,7 @@ const AddUpdateModal: FC<AddUpdateModalProps> = (props) => {
   return (
     <Modal
       {...props}
-      title={`${noti ? "Sửa thông báo" : "Thêm thông báo"}${
-        notification.id || 0
-      }`}
+      title={noti ? "Sửa thông báo" : "Thêm thông báo"}
       open={noti !== null}
       width={800}
       okText={noti ? "Lưu" : "Thêm"}
@@ -131,6 +132,7 @@ const AddUpdateModal: FC<AddUpdateModalProps> = (props) => {
               onChange={(e) =>
                 setNotification({ ...notification, content: e.target.value })
               }
+              rows={3}
             />
           </Form.Item>
           <Form.Item

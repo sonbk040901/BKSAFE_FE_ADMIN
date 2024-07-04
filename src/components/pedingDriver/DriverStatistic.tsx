@@ -178,11 +178,11 @@ const DriverStatistic: FC<DriverStatisticProps> = ({ driverId }) => {
             allowClear={false}
           />
         </Space>
-        <div className="flex gap-2 pr-1 items-baseline">
+        <div className="flex gap-2 pr-3 items-baseline">
           <Typography className="text-gray-500 font-semibold text-base">
-            Số chuyến từ chối trong tháng này:
+            Số chuyến từ chối:
           </Typography>
-          <span className="font-semibold text-lg text-red-500">{reject}</span>
+          <span className="font-semibold text-xl text-red-500">{reject}</span>
         </div>
       </div>
       <div className="h-60 relative">
