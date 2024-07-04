@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Loader from "../components/Loader";
 import AuthLayout from "../layouts/AuthLayout";
 import DriverList from "../pages/DriverList";
+import NotificationList from "../pages/NotificationList";
 const MainLayout = Loader(
   lazy(async () => import("../layouts/MainLayout")),
   "App",
@@ -46,6 +47,10 @@ const Router = createBrowserRouter([
             element: <DriverDetail />,
           },
         ],
+      },
+      {
+        path: "notifications",
+        element: <NotificationList />,
       },
     ],
   },

@@ -125,3 +125,12 @@ export interface Booking {
   status: BookingStatus;
   review: string;
 }
+export interface Notification {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  title: string;
+  content: string;
+  image: string;
+  target: "ALL" | "DRIVER" | "USER";
+}

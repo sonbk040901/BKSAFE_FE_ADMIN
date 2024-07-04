@@ -22,6 +22,9 @@ const getTitle = (pathname: string) => {
   if (pathname.startsWith("/users")) {
     return "Danh sách người dùng";
   }
+  if (pathname.startsWith("/notifications")) {
+    return "Danh sách thông báo";
+  }
   if (pathname.startsWith("/")) {
     return "Trang chủ";
   }

@@ -4,7 +4,8 @@ import Icon, {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined
+  UserOutlined,
+  NotificationOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { FC } from "react";
@@ -36,6 +37,11 @@ const items: MenuProps["items"] = [
     key: "/pending-drivers",
     icon: <Icon component={() => <DriverIcon size={14} />} />,
     label: "Tài xế chờ duyệt",
+  },
+  {
+    key: "/notifications",
+    icon: <NotificationOutlined />,
+    label: "Thông báo",
   },
 ];
 const Slider: FC = () => {
