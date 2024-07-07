@@ -141,9 +141,8 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
       <div className="flex flex-col h-full gap-2">
         <div className="relative flex-1">
           <Carousel
-            infinite={false}
+            infinite={true}
             ref={carouselRef}
-            draggable
           >
             {[...chunks(data, 5)].map((data) => (
               <div
