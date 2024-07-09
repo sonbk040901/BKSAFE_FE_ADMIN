@@ -29,12 +29,15 @@ const RequestList = () => {
   const [user, setUser] = useState<User>();
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
   const statisticBarRef = useRef<StatisticBarRef>(null);
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryFn: () => bookingApi.getAll(query),
     initialData,
-    queryKey: [{ ...query }],
+    queryKey: [query, "bookings"],
     refetchOnWindowFocus: false,
   });
+  const selectedBookingUserId = data.data.find(
+    (item) => item.id === bookingId,
+  )?.user?.id;
   const columns: ColumnsType<Booking> = useMemo(
     () => [
       {
@@ -193,7 +196,7 @@ const RequestList = () => {
     setBookingId(undefined);
   };
   const handleRefresh = () => {
-    setQuery((prv) => ({ ...prv, status: [] }));
+    void refetch();
     statisticBarRef.current?.refetch();
   };
   return (
@@ -202,8 +205,10 @@ const RequestList = () => {
       direction="vertical"
     >
       <SelectDriverDrawer
-        onClose={handleCloseDrawer}
         bookingId={bookingId}
+        userId={selectedBookingUserId}
+        onClose={handleCloseDrawer}
+        onChange={handleRefresh}
         onReject={handleRefresh}
       />
       <div className="flex gap-2">
@@ -216,6 +221,7 @@ const RequestList = () => {
               status: status ? [status] : [],
             }));
           }}
+          onRefresh={() => void refetch()}
         />
       </div>
       <Table

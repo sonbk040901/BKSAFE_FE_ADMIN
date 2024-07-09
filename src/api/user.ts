@@ -1,6 +1,11 @@
 import buildUrl from "../utils/searchParam";
 import instance from "./axios";
-import { PagingAndSortDto, PagingAndSortResponse, User } from "./types";
+import {
+  ActivateStatus,
+  PagingAndSortDto,
+  PagingAndSortResponse,
+  User,
+} from "./types";
 export interface GetAllPagingAndSortDto extends PagingAndSortDto {
   isActivated?: boolean | boolean[];
 }
@@ -18,5 +23,13 @@ export const getStatistic = async () => {
     blocked: number;
     total: number;
   }>(path);
+  return res.data;
+};
+export const action = async (
+  userId: number,
+  status: Exclude<ActivateStatus, "DEACTIVATED">,
+) => {
+  const path = `users/${userId}/action`;
+  const res = await instance.patch<void>(path, { status });
   return res.data;
 };

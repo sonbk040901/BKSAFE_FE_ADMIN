@@ -7,11 +7,16 @@ import {
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Carousel, Drawer, Modal, message } from "antd";
-import { useRef, type ComponentProps, type FC } from "react";
+import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import { bookingApi } from "../../api";
-import { PagingAndSortResponse, SuggestDriver } from "../../api/types";
+import {
+  BookingStatus,
+  PagingAndSortResponse,
+  SuggestDriver,
+} from "../../api/types";
 import SuggestDriverItem from "./SuggestDriver";
 import { CarouselRef } from "antd/es/carousel";
+import { subcribe } from "../../socket";
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
     yield arr.slice(i, i + n);
@@ -28,13 +33,14 @@ const initialData: PagingAndSortResponse<SuggestDriver> = {
 };
 interface SelectDriverDrawerProps extends ComponentProps<typeof Drawer> {
   bookingId?: number;
+  userId?: number;
   onClose?: () => void;
   onChange?: () => void;
   onReject?: () => void;
 }
 
 const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
-  const { bookingId, onClose, onReject } = props;
+  const { bookingId, onClose, onReject, onChange, userId } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, modalContext] = Modal.useModal();
   const carouselRef = useRef<CarouselRef>(null);
@@ -49,6 +55,27 @@ const SelectDriverDrawer: FC<SelectDriverDrawerProps> = (props) => {
     refetchOnWindowFocus: false,
   });
   const { data } = dto;
+  useEffect(() => {
+    return subcribe(
+      "booking/current-status",
+      (payload: { userId: number; status: BookingStatus }) => {
+        const { userId: id, status } = payload;
+        if (userId !== id) return;
+        if (status === "RECEIVED") {
+          void messageApi.success("Tìm thấy tài xế, đang đến điểm đón");
+          onChange?.();
+          onClose?.();
+          return;
+        }
+        if (status === "CANCELLED") {
+          void messageApi.info("Yêu cầu đã bị hủy");
+          onChange?.();
+          onClose?.();
+          return;
+        }
+      },
+    );
+  }, [messageApi, onChange, onClose, userId]);
   const handleSelect = (driverId: number) => {
     if (!bookingId) return;
     void modal.confirm({

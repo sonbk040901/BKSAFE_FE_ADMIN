@@ -1,14 +1,20 @@
-import { EyeOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  WarningFilled,
+  IssuesCloseOutlined,
+} from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Avatar,
   Button,
   Image,
+  Popconfirm,
   Space,
   Table,
   Tag,
   Tooltip,
   Typography,
+  message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
@@ -29,7 +35,7 @@ const initialData: PagingAndSortResponse<User> = {
 
 const UserList = () => {
   const [query, setQuery] = useState<GetAllPagingAndSortDto>(initialData);
-  const [user, setUser] = useState<User>();
+  const [user] = useState<User>();
   const [open, setOpen] = useState(false);
   const [previewSrc, setPreviewSrc] = useState<string>();
   const { data, isFetching, refetch } = useQuery({
@@ -38,6 +44,19 @@ const UserList = () => {
     queryKey: ["users", query],
     refetchOnWindowFocus: false,
   });
+  const handleAction =
+    (status: Exclude<ActivateStatus, "DEACTIVATED">) => (userId: number) => {
+      void userApi
+        .action(userId, status)
+        .then(() => refetch())
+        .then(() =>
+          message.success(
+            status === "ACTIVATED"
+              ? "Bỏ chặn người dùng thành công"
+              : "Chặn người dùng thành công",
+          ),
+        );
+    };
   const columns: ColumnsType<User> = [
     {
       title: "STT",
@@ -141,10 +160,10 @@ const UserList = () => {
     {
       title: "Thao tác",
       key: "action",
-      width: 100,
+      width: 90,
       render: (_, record) => (
         <Space>
-          <Tooltip
+          {/* <Tooltip
             color="white"
             title={<p className="text-slate-950">Xem chi tiết</p>}
           >
@@ -157,7 +176,48 @@ const UserList = () => {
                 setOpen(true);
               }}
             />
-          </Tooltip>
+          </Tooltip> */}
+
+          {record.activateStatus === "ACTIVATED" ? (
+            <Popconfirm
+              title="Xác nhận chặn?"
+              okText="Chặn"
+              cancelText="Hủy"
+              onConfirm={() => handleAction("BLOCKED")(record.id)}
+            >
+              <Tooltip
+                color="white"
+                title={<p className="text-slate-950">Chặn người dùng</p>}
+                placement="bottom"
+              >
+                <Button
+                  size="small"
+                  icon={<WarningFilled />}
+                  type="text"
+                  danger
+                />
+              </Tooltip>
+            </Popconfirm>
+          ) : record.activateStatus === "BLOCKED" ? (
+            <Popconfirm
+              title="Xác nhận bỏ chặn?"
+              okText="Bỏ chặn"
+              cancelText="Hủy"
+              onConfirm={() => handleAction("ACTIVATED")(record.id)}
+              placement="bottom"
+            >
+              <Tooltip
+                color="white"
+                title={<p className="text-slate-950">Bỏ chặn người dùng</p>}
+              >
+                <Button
+                  size="small"
+                  icon={<IssuesCloseOutlined />}
+                  type="text"
+                />
+              </Tooltip>
+            </Popconfirm>
+          ) : null}
         </Space>
       ),
     },

@@ -37,13 +37,14 @@ const getTagStatus = (status: BookingStatus) => {
 };
 interface StatisticBarProps {
   onSelect?: (status?: BookingStatus) => void;
+  onRefresh?: () => void;
 }
 export interface StatisticBarRef {
   refetch: () => void;
 }
 
 const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
-  ({ onSelect }, ref) => {
+  ({ onSelect, onRefresh }, ref) => {
     const [notiApi, contextHolder] = notification.useNotification();
     const {
       data: statistic,
@@ -85,16 +86,23 @@ const StatisticBar = forwardRef<StatisticBarRef, StatisticBarProps>(
       setHasNoti(false);
       onSelect?.(status);
     };
+    const handleClickRefresh = async () => {
+      await refetchStatistic();
+      onRefresh?.();
+    };
     return (
       <div className="relative w-[570px] p-3 rounded-md border-[1px] border-solid border-slate-200 grid grid-cols-5 gap-3 shadow-sm">
         {contextHolder}
         <span className="absolute bottom-1 right-1 cursor-pointer">
           <RedoOutlined
             spin={isFetching}
-            onClick={() => void refetchStatistic()}
+            onClick={() => void handleClickRefresh()}
           />
         </span>
-        <Space className="row-span-2" key={"total"}>
+        <Space
+          className="row-span-2"
+          key={"total"}
+        >
           <div className="flex flex-col gap-2 columns-2">
             <span>Tổng</span>
             <div

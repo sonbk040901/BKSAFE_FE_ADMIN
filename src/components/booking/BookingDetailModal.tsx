@@ -2,12 +2,16 @@ import { StarFilled } from "@ant-design/icons";
 import {
   DirectionsRenderer,
   GoogleMap,
-  useJsApiLoader,
   MarkerF,
+  useJsApiLoader,
 } from "@react-google-maps/api";
 import { Modal, ModalProps, Space } from "antd";
 import { useEffect, useRef, useState, type FC } from "react";
 import { Booking, Location } from "../../api/types";
+import driverPin from "../../assets/images/driver-pin.png";
+import dropOffPin from "../../assets/images/drop-off-pin.png";
+import homePin from "../../assets/images/home-pin.png";
+import userPin from "../../assets/images/user-pin.png";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { subcribe } from "../../socket";
 import { getTagStatus } from "../../utils";
@@ -15,10 +19,6 @@ import timeDiff from "../../utils/timeDiff";
 import AccInfoCard from "./AccInfoCard";
 import BookingInfoCard from "./BookingInfoCard";
 import { InfoItemProps } from "./InfoItem";
-import driverPin from "../../assets/images/driver-pin.png";
-import userPin from "../../assets/images/user-pin.png";
-import homePin from "../../assets/images/home-pin.png";
-import dropOffPin from "../../assets/images/drop-off-pin.png";
 interface BookingDetailModalProps extends ModalProps {
   booking?: Booking;
 }
@@ -179,7 +179,12 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
     );
   }, [locations]);
   useEffect(() => {
-    if (!booking || booking.status !== "DRIVING") return;
+    if (
+      !booking ||
+      (booking.status !== "DRIVING" && booking.status !== "RECEIVED")
+    )
+      return;
+    setDriverLocation(driver?.location);
     return subcribe(
       "booking/current-driver-location",
       (location: Location & { driverId: number }) => {
@@ -187,7 +192,7 @@ const BookingDetailModal: FC<BookingDetailModalProps> = ({
         setDriverLocation(location);
       },
     );
-  }, [booking, driver?.id]);
+  }, [booking, driver]);
   return (
     <Modal
       {...props}

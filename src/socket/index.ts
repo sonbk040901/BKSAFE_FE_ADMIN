@@ -24,7 +24,8 @@ export type SocketNameSpace = "booking";
 export type BookingEvent =
   | "new-pending"
   | "new-accepted"
-  | "current-driver-location";
+  | "current-driver-location"
+  | "current-status"
 export type SocketEvent = `${SocketNameSpace}/${BookingEvent}`;
 let booking: Socket | undefined;
 
