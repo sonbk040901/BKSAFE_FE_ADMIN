@@ -34,8 +34,7 @@ const SuggestDriverItem: FC<SuggestDriverItemProps> = (props) => {
         <div className="flex gap-2 items-center">
           <Avatar
             size={46}
-            // src={driver.avatar ?? "https://i.pravatar.cc/300"}
-            src={"https://i.pravatar.cc/300"}
+            src={driver.avatar ?? "https://i.pravatar.cc/300"}
           />
           <Space
             direction="vertical"
